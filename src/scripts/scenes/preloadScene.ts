@@ -1,10 +1,20 @@
+
+
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super({ key: 'PreloadScene' })
   }
 
   preload() {
-    this.load.image('phaser-logo', 'assets/img/phaser-logo.png')
+    //this.load.image('backgrund', 'assets/img/Backgrund.png')
+    this.load.spritesheet('player', 'assets/img/Politiker.png', { frameWidth: 19, frameHeight: 32, endFrame: 40 });	
+    this.load.image('peng', 'assets/img/Peng.png')
+
+		// load images
+		this.load.image('sky', 'assets/img/Sky.png');
+		this.load.image('mountains', 'assets/img/Mountains.png');
+		this.load.image('hills', 'assets/img/Hills.png');
+		this.load.image('forest', 'assets/img/Forest.png');
   }
 
   create() {
