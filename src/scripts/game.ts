@@ -1,9 +1,10 @@
 import 'phaser'
 import MainScene from './scenes/mainScene'
+import PostScene from './scenes/postScene'
 import PreloadScene from './scenes/preloadScene'
 
-const DEFAULT_WIDTH = 320
-const DEFAULT_HEIGHT = 200
+const DEFAULT_WIDTH = 960
+const DEFAULT_HEIGHT = 540
 
 const config = {
   type: Phaser.AUTO,
@@ -11,6 +12,7 @@ const config = {
   pixelArt: true,
   width: DEFAULT_WIDTH,
   height: DEFAULT_HEIGHT,
+
   scale: {
     parent: 'phaser-game',
     mode: Phaser.Scale.FIT,
@@ -18,7 +20,7 @@ const config = {
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT
   },
-  scene: [PreloadScene, MainScene],
+  scene: [PreloadScene, MainScene, PostScene],
   physics: {
     default: 'arcade',
     arcade: {
