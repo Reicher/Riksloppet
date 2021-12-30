@@ -21,9 +21,8 @@ export default class MainScene extends Phaser.Scene {
 
   }
 
-  init(data) {
+  init(data) {    
     this.kill_line = 0
-    this.cursors = this.input.keyboard.createCursorKeys();
     this.physics.world.setBounds(-50, 200, this.WIDTH/1.5, this.HEIGHT-200)
 
     this.bakgrund3 = this.add.tileSprite(0, 0, this.WIDTH, 200, "bakgrund3").setOrigin(0)
@@ -46,7 +45,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-
+    console.log('Main Scene')
+    this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   update() {

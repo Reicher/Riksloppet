@@ -20,10 +20,18 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('bakgrund1', 'assets/img/bakgrund1.png');
     this.load.image('bakgrund2', 'assets/img/bakgrund2.png');
     this.load.image('bakgrund3', 'assets/img/bakgrund3.png');
+
+    this.load.image('splash', 'assets/img/splash.png');
+    this.load.image('title', 'assets/img/titel.png');
+    this.load.image('levelSetting', 'assets/img/levelSettings.png');
+    this.load.image('charSelect', 'assets/img/charSelect.png');    
+    this.load.image('postGame', 'assets/img/postGame.png');    
   }
 
-  create() {
-    this.scene.start('MainScene')
+  create() {    
+    console.log('PreLoad')
+
+    this.scene.start('SplashScene')
 
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),
