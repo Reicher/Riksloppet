@@ -7,7 +7,7 @@ export default class PreloadScene extends Phaser.Scene {
 
   preload() {
     //this.load.image('backgrund', 'assets/img/Backgrund.png')
-    this.load.spritesheet('player', 'assets/img/Politiker.png', { frameWidth: 19, frameHeight: 32, endFrame: 40 });	
+    this.load.spritesheet('player', 'assets/img/Politiker.png', { frameWidth: 17, frameHeight: 32, endFrame: 40 });	
     this.load.image('peng', 'assets/img/Peng.png')
 
 		// load images
@@ -31,7 +31,8 @@ export default class PreloadScene extends Phaser.Scene {
   create() {    
     console.log('PreLoad')
 
-    this.scene.start('SplashScene')
+    //this.scene.start('SplashScene')
+    this.scene.start('MainScene')
 
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),

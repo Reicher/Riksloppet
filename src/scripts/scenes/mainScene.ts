@@ -4,17 +4,13 @@ import FpsText from '../objects/fpsText'
 
 
 export default class MainScene extends Phaser.Scene {
-  mark
-  bakgrund1
-  bakgrund2
-  bakgrund3
   player
 
   cursors
   kill_line
 
-  WIDTH = 960
-  HEIGHT = 540
+  WIDTH
+  HEIGHT
 
   constructor() {
     super({ key: 'MainScene' })
@@ -22,18 +18,21 @@ export default class MainScene extends Phaser.Scene {
   }
 
   init(data) {    
+    this.WIDTH = this.sys.game.canvas.width;
+    this.HEIGHT = this.sys.game.canvas.height;
     this.kill_line = 0
-    this.physics.world.setBounds(-50, 200, this.WIDTH/1.5, this.HEIGHT-200)
+    this.physics.world.setBounds(-50, 200, this.WIDTH*2, this.HEIGHT-200)
 
-    this.bakgrund3 = this.add.tileSprite(0, 0, this.WIDTH, 200, "bakgrund3").setOrigin(0)
-    this.bakgrund2 = this.add.tileSprite(0, 0, this.WIDTH, 200, "bakgrund2").setOrigin(0)
-    this.bakgrund1 = this.add.tileSprite(0, 0, this.WIDTH, 200, "bakgrund1").setOrigin(0)
-    this.mark = this.add.tileSprite(0, 0, this.WIDTH, this.HEIGHT, "mark").setOrigin(0)//.setScrollFactor(0.3, 0)
+    this.add.tileSprite(0, 0, this.WIDTH*2, 200, "bakgrund3").setOrigin(0).setScrollFactor(0.4)
+    this.add.tileSprite(0, 0, this.WIDTH*2, 200, "bakgrund2").setOrigin(0).setScrollFactor(0.7)
+    this.add.tileSprite(0, 0, this.WIDTH*2, 200, "bakgrund1").setOrigin(0).setScrollFactor(0.9)
+    this.add.tileSprite(0, 0, this.WIDTH*2, this.HEIGHT, "mark").setOrigin(0)
     
+
     this.anims.create({
       key: "east",
       frameRate: 7,
-      frames: this.anims.generateFrameNumbers("player", { start: 0, end: 10 }),
+      frames: this.anims.generateFrameNumbers("player", { start: 28, end: 34 }),
       repeat: -1
     });
     this.player = this.physics.add.sprite(50, this.WIDTH/4, "player");
@@ -50,18 +49,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
-    // setScrollFactor
-    //this.forest.setScrollFactor(0.9)
-		//this.hills.setScrollFactor(0.6)
-		//this.mountains.setScrollFactor(0.3)
-
-    if (this.player.x < this.cameras.main.scrollX){
-      this.scene.start('PostScene')
-    }
-
-    this.cameras.main.setScroll(this.kill_line, 0)
-    this.kill_line += 0.2
-
     if (this.cursors.left.isDown)
     {
       this.player.setVelocityX(-75);
@@ -83,5 +70,18 @@ export default class MainScene extends Phaser.Scene {
     }
     else
       this.player.setVelocityY(0);
+  
+    console.log(this.player.x, this.player.y)
+    
+    // Game speed and state stuff
+    if (this.player.x < this.kill_line){
+      this.scene.start('PostScene')
+    }
+    else if (this.player.x >= this.kill_line + this.WIDTH/2 && this.cursors.right.isDown)
+      this.kill_line = this.player.x - this.WIDTH/2
+    else 
+      this.kill_line += 0.2
+
+    this.cameras.main.setScroll(this.kill_line, 0)
   }
 }
