@@ -1,5 +1,5 @@
 export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
-      cursors
+      cursors      
     constructor(scene, x: number, y: number, key: string, cursors?) {
       super(scene, x, y, key);
       this.scene = scene;
@@ -17,31 +17,33 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       //  sprite.setTexture(key2);
       //});
 
+      scene.anims.create({
+        key: "east",
+        frameRate: 7,
+        frames: scene.anims.generateFrameNumbers("player", { start: 28, end: 34 }),
+        repeat: -1
+      });
+      this.play("east"); 
       
     }
 
-    update() {
+    update(speed) {
+
+        let new_speedX = 0
+        let new_speedY = 0
+
         if (this.cursors.left.isDown)
-        {
-          this.setVelocityX(-75);
-        }
+          new_speedX -= 10
         else if (this.cursors.right.isDown)
-        {
-          this.setVelocityX(75);   
-        }
-        else
-          this.setVelocityX(0);
-    
+            new_speedX = 10
+        
         if (this.cursors.up.isDown)
-        {
-          this.setVelocityY(-75);    
-        }
+            new_speedY -= 10
         else if (this.cursors.down.isDown)
-        {
-          this.setVelocityY(75);    
-        }
-        else
-          this.setVelocityY(0);
+            new_speedY = 10
+        
+        this.setVelocityX(new_speedX * 10);
+        this.setVelocityY(new_speedY * 10);
     }
 
     destroy(){
