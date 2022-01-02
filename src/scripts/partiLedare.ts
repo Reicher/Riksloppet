@@ -24,8 +24,10 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     }
 
     playerControl (speed){
+
         let new_speedX = 0
         let new_speedY = 0
+
         if (this.cursors.left.isDown)
             new_speedX -= 20
         else if (this.cursors.right.isDown)
@@ -43,9 +45,10 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     update(speed) {
         if (this.cursors)
             this.playerControl(speed)
-        else
+        else{
             this.setVelocityX(15);
             this.setVelocityY(0);
+        }
     }
 
     destroy(){
