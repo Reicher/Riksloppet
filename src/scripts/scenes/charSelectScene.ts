@@ -11,6 +11,11 @@ export default class CharSelectScene extends Phaser.Scene {
     this.add.sprite(0, 0, 'charSelect').setOrigin(0)
 
 
+      //sprite.on('pointerdown', () => {
+      //  sprite.setTexture(key2);
+      //});
+
+      
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),
      * add the mainScene to the Scene Manager

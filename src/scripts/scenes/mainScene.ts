@@ -1,7 +1,7 @@
 import PartiLedare from '../partiLedare'
 
 export default class MainScene extends Phaser.Scene {
-  player : PartiLedare
+  makten:PartiLedare[] = new Array(8)  
 
   bg3
   bg2
@@ -36,10 +36,18 @@ export default class MainScene extends Phaser.Scene {
   create() {
     console.log('Main Scene')
 
-  
-    this.cursors = this.input.keyboard.createCursorKeys();
+    let spelare = new PartiLedare(this, 50, 300, "vansterpartiet")
+    spelare.cursors = this.input.keyboard.createCursorKeys()
+    this.makten.push(spelare)
+
+    this.makten.push(new PartiLedare(this, 150, 300, "socialdemokraterna"))
+    this.makten.push(new PartiLedare(this, 250, 300, "miljöpartiet"))
+    this.makten.push(new PartiLedare(this, 100, 400, "sverigedemokraterna"))
+    this.makten.push(new PartiLedare(this, 200, 400, "moderaterna"))
+    this.makten.push(new PartiLedare(this, 50, 500, "liberalerna"))
+    this.makten.push(new PartiLedare(this, 150, 500, "kristdemokraterna"))
+    this.makten.push(new PartiLedare(this, 250, 500, "centern"))
     
-    this.player = new PartiLedare(this, 50, 300, 'player', this.cursors)
 
 
     for(let i = 0; i < 3; i++)
@@ -48,24 +56,23 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
-    this.speed = this.minimum_speed
-
-
-
-    this.player.update(this.speed)
+    let speed = this.minimum_speed
+    this.makten.forEach(function (ledare) {
+      ledare.update(speed)
+  }, this);
     
     // Game speed and state stuff
-    if (this.player.x < this.kill_line){
-      this.scene.start('PostScene')
-    }
+    //if (this.spelare.x < this.kill_line){
+    //  this.scene.start('PostScene')
+    //}
     //else if (this.player.x >= this.kill_line + this.WIDTH/2 && this.cursors.right.isDown)
     //  this.kill_line = this.player.x - this.WIDTH/2
 
 
       // update drawn background
-      this.mark.tilePositionX += this.speed
-      this.bg1.tilePositionX += this.speed * 0.75
-      this.bg2.tilePositionX += this.speed * 0.5
-      this.bg3.tilePositionX += this.speed * 0.25
+      this.mark.tilePositionX += speed
+      this.bg1.tilePositionX += speed * 0.75
+      this.bg2.tilePositionX += speed * 0.5
+      this.bg3.tilePositionX += speed * 0.25
   }
 }
