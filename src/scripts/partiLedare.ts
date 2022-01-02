@@ -1,10 +1,12 @@
 export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       cursors      
+      speed = 50
     constructor(scene, x: number, y: number, key: string, cursors?) {
       super(scene, x, y, key);
       this.scene = scene;
       this.x = x;
       this.y = y;
+      this.cursors = cursors
 
       scene.add.existing(this);
       scene.physics.add.existing(this);
@@ -12,7 +14,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       this.setInteractive() // Fyll på med info
       this.setCollideWorldBounds()
 
-
+        // Change to key later....
       scene.anims.create({
         key: "east",
         frameRate: 7,
@@ -29,14 +31,14 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
         let new_speedY = 0
 
         if (this.cursors.left.isDown)
-            new_speedX -= 20
+            new_speedX -= this.speed
         else if (this.cursors.right.isDown)
-            new_speedX = 20
+            new_speedX = this.speed
 
         if (this.cursors.up.isDown)
-            new_speedY -= 20
+            new_speedY -= this.speed
         else if (this.cursors.down.isDown)
-            new_speedY = 20
+            new_speedY = this.speed
 
         this.setVelocityX(new_speedX);
         this.setVelocityY(new_speedY);      
@@ -46,7 +48,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
         if (this.cursors)
             this.playerControl(speed)
         else{
-            this.setVelocityX(15);
+            this.setVelocityX(this.speed*0.5);
             this.setVelocityY(0);
         }
     }
