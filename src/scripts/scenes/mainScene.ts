@@ -1,16 +1,14 @@
 import PartiLedare from '../partiLedare'
 
 export default class MainScene extends Phaser.Scene {
-  makten:PartiLedare[] = new Array(0)  
-  spelare
+  makten : PartiLedare[] = new Array(0)  
+  spelare : PartiLedare
   bg3
   bg2
   bg1
   mark
 
-  scroll_speed = 0.2
   goal = 700
-  kill_line = 0
   cursors
 
   WIDTH : number
@@ -34,6 +32,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.spelare = new PartiLedare(this, 50, 300, "vansterpartiet", this.input.keyboard.createCursorKeys())
 
+    this.makten = []
     this.makten.push(this.spelare)
     this.makten.push(new PartiLedare(this, 150, 300, "socialdemokraterna"))
     this.makten.push(new PartiLedare(this, 250, 300, "miljöpartiet"))
@@ -57,14 +56,14 @@ export default class MainScene extends Phaser.Scene {
     let scroll_speed = 0.2
     for(let i = 0; i < this.makten.length; i++){
       // Look for dead
-      if(this.makten[i].x < this.kill_line){
+      if(this.makten[i].x < 0){
         if (this.spelare == this.makten[i])
           this.scene.start('PostScene')  
         this.makten[i].destroy()                
       } 
-      else if (this.makten[i].x >= this.kill_line + this.WIDTH/2){
+      else if (this.makten[i].x >= this.WIDTH/2){
         hare_speed = this.makten[i].speed[0]
-        this.scroll_speed = this.scroll_speed * 1.1
+        scroll_speed = scroll_speed * 1.2
       }
 
       this.makten[i].update()
