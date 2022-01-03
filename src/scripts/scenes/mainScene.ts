@@ -8,8 +8,8 @@ export default class MainScene extends Phaser.Scene {
   bg1
   mark
 
-  minimum_speed = 0.5
-  speed = 0
+  scroll_speed = 0.2
+  goal = 700
   kill_line = 0
   cursors
 
@@ -52,31 +52,34 @@ export default class MainScene extends Phaser.Scene {
 
   }
 
-  update() {
-    let speed = this.minimum_speed
-
+  update(time, delta) {
+    let hare_speed = 0
+    let scroll_speed = 0.2
     for(let i = 0; i < this.makten.length; i++){
-      this.makten[i].update(speed)
-
+      // Look for dead
       if(this.makten[i].x < this.kill_line){
         if (this.spelare == this.makten[i])
           this.scene.start('PostScene')  
-          this.makten[i].destroy()
+        this.makten[i].destroy()                
+      } 
+      else if (this.makten[i].x >= this.kill_line + this.WIDTH/2){
+        hare_speed = this.makten[i].speed[0]
+        this.scroll_speed = this.scroll_speed * 1.1
       }
-    }
-    
-    // Game speed and state stuff
-    //if (this.spelare.x < this.kill_line){
-    //  this.scene.start('PostScene')
-    //}
-    //else if (this.player.x >= this.kill_line + this.WIDTH/2 && this.cursors.right.isDown)
-    //  this.kill_line = this.player.x - this.WIDTH/2
 
+      this.makten[i].update()
+    }
+
+    // Set speeds
+    for(let i = 0; i < this.makten.length; i++){
+      this.makten[i].setVelocityX((this.makten[i].speed[0] - hare_speed) * delta)
+      this.makten[i].setVelocityY(this.makten[i].speed[1] * delta)
+    }
 
       // update drawn background
-      this.mark.tilePositionX += speed
-      this.bg1.tilePositionX += speed * 0.75
-      this.bg2.tilePositionX += speed * 0.5
-      this.bg3.tilePositionX += speed * 0.25
+      this.mark.tilePositionX += scroll_speed * delta
+      this.bg1.tilePositionX += scroll_speed * 0.75 * delta
+      this.bg2.tilePositionX += scroll_speed * 0.5 * delta
+      this.bg3.tilePositionX += scroll_speed * 0.25 * delta
   }
 }
