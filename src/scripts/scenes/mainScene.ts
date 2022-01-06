@@ -58,7 +58,8 @@ export default class MainScene extends Phaser.Scene {
     let hare_speed = 0
     let scroll_speed = 0.1
 
-    this.physics.world.overlap(this.riksdagen, this.hinder, this.collisionHandler)
+    this.physics.world.overlap(this.riksdagen, this.hinder, this.hinderCollision)
+    this.physics.world.overlap(this.riksdagen, this.riksdagen, this.riksdagskollision)
 
     for(let i = 0; i < this.riksdagen.getLength(); i++){
       let parti = this.riksdagen.getChildren()[i]
@@ -94,8 +95,13 @@ export default class MainScene extends Phaser.Scene {
     this.bg3.tilePositionX += scroll_speed * 0.25 * delta
   }
 
-  collisionHandler(partiledare, annat){
-    partiledare.collision(annat)
-    //annat.collision(partiledare)
+  hinderCollision(partiledare, annat){
+      partiledare.knocked_out = 1
+  }
+
+  riksdagskollision(partiledare, annat){
+    if (partiledare.punch){
+        annat.knocked_out = 1
+    }               
   }
 }

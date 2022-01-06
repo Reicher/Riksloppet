@@ -3,6 +3,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       speed = [0, 0]
       max_speed = 7
       knocked_out = 0
+      punch = false
     constructor(scene, x: number, y: number, key: string, cursors?) {
       super(scene, x, y, key);
       this.cursors = cursors
@@ -38,21 +39,25 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
             this.speed[1] = this.max_speed
         else
             this.speed[1] = 0
+
+        if (this.cursors.space.isDown){
+            this.punch = true
+            console.log('Ba...')
+        }else
+            this.punch = false
     }
 
     update(time, delta) {
-        if (this.knocked_out > 0){
+
+        if (this.knocked_out > 0)
+        {
             this.speed[0] = 0
-            this.knocked_out -= delta
+            this.knocked_out -= (delta/1000)
         }
         else if (this.cursors)
             this.playerControl()
         else
-            this.speed[0] = this.max_speed // Super AI
-    }
-
-    collision(){
-        this.knocked_out = 1
+            this.speed[0] = this.max_speed *0.6// Super AI
     }
 
     destroy(){
