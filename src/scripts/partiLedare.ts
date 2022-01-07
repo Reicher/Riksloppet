@@ -1,12 +1,16 @@
 export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       cursors      
       speed = [0, 0]
-      max_speed = 7
+      max_speed = 5
       knocked_out = 0
       punch = false
+      player = false
     constructor(scene, x: number, y: number, key: string, cursors?) {
       super(scene, x, y, key);
-      this.cursors = cursors
+      if (cursors){
+        this.cursors = cursors
+        this.player = true
+      }
 
       scene.add.existing(this);
       scene.physics.add.existing(this);
@@ -26,23 +30,26 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     }
 
     playerControl (){
+        let dir = [0, 0]
         if (this.cursors.left.isDown)
-            this.speed[0] = -this.max_speed
+            dir[0] = -1
         else if (this.cursors.right.isDown)
-            this.speed[0] = this.max_speed
-        else
-            this.speed[0] = 0
+            dir[0] = 1
 
         if (this.cursors.up.isDown)
-            this.speed[1] = -this.max_speed
+            dir[1] = -1
         else if (this.cursors.down.isDown)
-            this.speed[1] = this.max_speed
-        else
-            this.speed[1] = 0
+            dir[1] = 1
+
+        let mag = Math.abs(Math.sqrt(dir[0]*dir[0] + dir[1]*dir[1]))
+        if (mag == 0)
+            mag = 1
+        console.log(mag)
+        this.speed[0] = dir[0]/mag * this.max_speed
+        this.speed[1] = dir[1]/mag * this.max_speed
 
         if (this.cursors.space.isDown){
             this.punch = true
-            console.log('Ba...')
         }else
             this.punch = false
     }
@@ -54,10 +61,13 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
             this.speed[0] = 0
             this.knocked_out -= (delta/1000)
         }
-        else if (this.cursors)
+        else if (this.player)
             this.playerControl()
         else
-            this.speed[0] = this.max_speed *0.6// Super AI
+        {
+            this.speed[0] = this.max_speed // Super AI
+            this.speed[1] = 0
+        }
     }
 
     destroy(){

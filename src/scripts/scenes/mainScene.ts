@@ -56,37 +56,26 @@ export default class MainScene extends Phaser.Scene {
 
   update(time, delta) {
     let hare_speed = 0
-    let scroll_speed = 0.1
+    let scroll_speed = 0.2
 
     this.physics.world.overlap(this.riksdagen, this.hinder, this.hinderCollision)
     this.physics.world.overlap(this.riksdagen, this.riksdagen, this.riksdagskollision)
 
-    for(let i = 0; i < this.riksdagen.getLength(); i++){
-      let parti = this.riksdagen.getChildren()[i]
-      // Look for dead
-      if(parti.x < 0){
-        if (this.spelare == parti)
-          this.scene.start('PostScene')  
-        parti.destroy()                
+    this.riksdagen.children.each(function(ledamot: PartiLedare, scene) {
+      if(ledamot.x < 0){
+        ledamot.destroy()       
+        if (ledamot.player)
+          scene.start('PostScene')           
       } 
-      else if (parti.x >= this.WIDTH*0.7){
-        hare_speed = parti.speed[0]
-        //scroll_speed = scroll_speed * 2
-      }
-      parti.update(time, delta)
-    }
 
-    // Set speeds
-    for(let i = 0; i < this.riksdagen.getLength(); i++){
-      let parti = this.riksdagen.getChildren()[i]
-      parti.setVelocityX((parti.speed[0] - hare_speed) * delta)
-      parti.setVelocityY(parti.speed[1] * delta)
-    }
+      ledamot.update(time, delta)
+      ledamot.setVelocityX((ledamot.speed[0] - hare_speed) * delta)
+      ledamot.setVelocityY(ledamot.speed[1] * delta)
+    }, this);
 
-    for(let i = 0; i < this.hinder.getLength(); i++){      
-      let hinder = this.hinder.getChildren()[i]
+    this.hinder.children.each(function(hinder) {   
       hinder.x = hinder.x - scroll_speed * delta
-    }
+    }, this)
 
     // update drawn background
     this.mark.tilePositionX += scroll_speed * delta
