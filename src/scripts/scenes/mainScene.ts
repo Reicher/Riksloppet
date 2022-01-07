@@ -1,14 +1,11 @@
+import Level from '../level'
 import PartiLedare from '../partiLedare'
 
 export default class MainScene extends Phaser.Scene {
   riksdagen //: PartiLedare[] = new Array(0)  
   spelare : PartiLedare
-  hinder
-
-  bg3
-  bg2
-  bg1
-  mark
+  levels : Level[] = []
+  hinder : Phaser.Physics.Arcade.Group
 
   goal = 700
   cursors
@@ -24,13 +21,8 @@ export default class MainScene extends Phaser.Scene {
   init() {    
     this.WIDTH = this.sys.game.canvas.width;
     this.HEIGHT = this.sys.game.canvas.height;
-
-    this.physics.world.setBounds(-50, 200, this.WIDTH + 50, this.HEIGHT)
-
-    this.bg3 = this.add.tileSprite(0, 0, this.WIDTH, 200, "bakgrund3").setOrigin(0).setScrollFactor(0.4)
-    this.bg2 = this.add.tileSprite(0, 0, this.WIDTH, 200, "bakgrund2").setOrigin(0).setScrollFactor(0.7)
-    this.bg1 = this.add.tileSprite(0, 0, this.WIDTH, 200, "bakgrund1").setOrigin(0).setScrollFactor(0.9)
-    this.mark = this.add.tileSprite(0, 0, this.WIDTH, this.HEIGHT, "mark").setOrigin(0)
+    let realistisk = new Level(this, this.goal, 'mark', 'bakgrund1', 'bakgrund2')
+    this.levels.push(realistisk)
 
     this.spelare = new PartiLedare(this, 50, 300, "vansterpartiet", this.input.keyboard.createCursorKeys())
     let partier = [this.spelare , 
@@ -44,44 +36,41 @@ export default class MainScene extends Phaser.Scene {
                               
     this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this, partier)
     this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
-
+    
   }
 
   create() {
     console.log('Main Scene')
-    this.hinder.enableBody = true;
     for(let i = 0; i < 3; i++)
       this.hinder.create(Phaser.Math.Between(this.WIDTH/2, this.WIDTH*2), Phaser.Math.Between(0, this.HEIGHT), 'peng')
   }
 
   update(time, delta) {
-    let hare_speed = 0
-    let scroll_speed = 0.2
+    let scroll_speed = 0
+    let scroll_line = 300
+    let cam = this.cameras.main
 
     this.physics.world.overlap(this.riksdagen, this.hinder, this.hinderCollision)
     this.physics.world.overlap(this.riksdagen, this.riksdagen, this.riksdagskollision)
 
-    this.riksdagen.children.each(function(ledamot: PartiLedare, scene) {
-      if(ledamot.x < 0){
+    let most_x = 0
+    this.riksdagen.children.each((ledamot: PartiLedare) => {
+      if(cam.x > ledamot.x || ledamot.x > this.goal){
         ledamot.destroy()       
         if (ledamot.player)
-          scene.start('PostScene')           
+          this.scene.start('PostScene')      
       } 
 
       ledamot.update(time, delta)
-      ledamot.setVelocityX((ledamot.speed[0] - hare_speed) * delta)
+
+      if (ledamot.x > most_x)
+        most_x = ledamot.x
+      
+      ledamot.setVelocityX(ledamot.speed[0] * delta)
       ledamot.setVelocityY(ledamot.speed[1] * delta)
-    }, this);
+    }) 
 
-    this.hinder.children.each(function(hinder) {   
-      hinder.x = hinder.x - scroll_speed * delta
-    }, this)
-
-    // update drawn background
-    this.mark.tilePositionX += scroll_speed * delta
-    this.bg1.tilePositionX += scroll_speed * 0.75 * delta
-    this.bg2.tilePositionX += scroll_speed * 0.5 * delta
-    this.bg3.tilePositionX += scroll_speed * 0.25 * delta
+    cam.setPosition(scroll_line-most_x, 0)
   }
 
   hinderCollision(partiledare, annat){

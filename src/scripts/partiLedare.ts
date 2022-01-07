@@ -44,7 +44,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
         let mag = Math.abs(Math.sqrt(dir[0]*dir[0] + dir[1]*dir[1]))
         if (mag == 0)
             mag = 1
-        console.log(mag)
+            
         this.speed[0] = dir[0]/mag * this.max_speed
         this.speed[1] = dir[1]/mag * this.max_speed
 
@@ -53,6 +53,8 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
         }else
             this.punch = false
     }
+
+
 
     update(time, delta) {
 
@@ -65,7 +67,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
             this.playerControl()
         else
         {
-            this.speed[0] = this.max_speed // Super AI
+            this.speed[0] = 0//this.max_speed // Super AI
             this.speed[1] = 0
         }
     }
