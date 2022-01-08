@@ -1,6 +1,6 @@
 export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     cursors      
-    max_speed = 5
+    max_speed = 10
     knocked_out = 0
     punch = false
     player = false
@@ -14,8 +14,6 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       }
       scene.add.existing(this);      
       scene.physics.add.existing(this)
-      scene.physics.world.enable(this, 0)
-      this.setCollideWorldBounds(true)
 
       // For now
       scene.anims.create({
@@ -29,6 +27,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     }
 
     playerControl (){
+        console.log('topspeed: ' + this.max_speed)
         let dir = [0, 0]
         if (this.cursors.left.isDown)
             dir[0] = -1
@@ -65,10 +64,12 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
             speed = this.playerControl()
         else
         {
-            speed[0] = this.max_speed * 0.2 // Super AI
+            speed[0] = this.max_speed // Super AI
             speed[1] = 0
         }
         this.setVelocityX(speed[0] * delta)
         this.setVelocityY(speed[1] * delta)
+
+        this.depth = this.y
     }
   }

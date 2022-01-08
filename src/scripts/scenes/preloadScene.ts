@@ -19,13 +19,16 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('charSelect', 'assets/img/charSelect.png');    
     this.load.image('postGame', 'assets/img/postGame.png');    
 
+    this.load.image('bil', 'assets/img/Blå bil.png');
+
     this.load.image('peng', 'assets/img/Peng.png');
+    this.load.image('neddut', 'assets/img/neddut.png');
   }
 
   create() {    
     console.log('PreLoad')
 
-    this.scene.start('SplashScene')
-    //this.scene.start('MainScene')
+    //this.scene.start('SplashScene')
+    this.scene.start('MainScene')
   }
 }
