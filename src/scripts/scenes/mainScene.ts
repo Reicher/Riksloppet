@@ -1,3 +1,4 @@
+import { NONE } from 'phaser'
 import Level from '../level'
 import PartiLedare from '../partiLedare'
 
@@ -24,7 +25,7 @@ export default class MainScene extends Phaser.Scene {
     this.HEIGHT = this.sys.game.canvas.height;    
     this.level = new Level(this, this.goal, 'gata', 'himmel')
 
-    this.spelare = new PartiLedare(this, 250, 300, "vansterpartiet", this.input.keyboard.createCursorKeys())
+    this.spelare = new PartiLedare(this, 50, 300, "vansterpartiet", this.input.keyboard.createCursorKeys())
     let partier = [this.spelare , 
       new PartiLedare(this, 150, 300, "socialdemokraterna"), 
       new PartiLedare(this, 250, 300, "miljöpartiet"),
@@ -46,18 +47,17 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+
     let cam = this.cameras.main
+    let most_x = 0
+    let kill_line = cam.worldView.x
 
     this.physics.world.overlap(this.riksdagen, this.hinder, this.hinderCollision)
     this.physics.world.overlap(this.riksdagen, this.riksdagen, this.riksdagskollision)
 
-    let most_x = 0
+    this.level.update(time, delta, 0)
+
     this.riksdagen.children.each((ledamot: PartiLedare) => {
-      if(cam.x > ledamot.x || ledamot.x > this.goal){
-        ledamot.destroy()       
-        if (ledamot.player)
-          this.scene.start('PostScene')      
-      } 
 
       ledamot.update(time, delta)
 
@@ -65,12 +65,14 @@ export default class MainScene extends Phaser.Scene {
         most_x = ledamot.x
         cam.centerOnX(most_x)
       }
-      
-      ledamot.setVelocityX(ledamot.speed[0] * delta)
-      ledamot.setVelocityY(ledamot.speed[1] * delta)
+
+      if(kill_line > ledamot.x || ledamot.x > this.goal){
+        this.riksdagen.remove(ledamot, true, true)
+        if (ledamot.player)
+          this.scene.start('PostScene')          
+      }
     }) 
 
-    this.level.update(time, delta, 0)
   }
 
   hinderCollision(partiledare, annat){
