@@ -1,6 +1,7 @@
 export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     cursors      
     max_speed = 8
+    rest_speed = 8
     knocked_out = 0
     punch = false
     player = false
@@ -9,25 +10,34 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     dir =[0, 0]
 
     constructor(scene, x: number, y: number, key: string, cursors?) {
-      super(scene, x, y, key);
+      super(scene, x, y, 'annie_stopp');
       if (cursors){
         this.cursors = cursors
         this.setInteractive()
         this.player = true
       }
+
+      // Running animation
+      scene.anims.create({
+        key: "spring",
+        frameRate: 20,
+        frames: scene.anims.generateFrameNumbers("annie_run", { start: 0, end: 11 }),
+        repeat: -1
+      })
+
+      // stopping animation
+      scene.anims.create({
+        key: "stopp",
+        frameRate: 40,
+        frames: scene.anims.generateFrameNumbers("annie_stopp", { start: 0, end: 5 }),
+        repeat: 0
+      })
+
       scene.add.existing(this);      
       scene.physics.add.existing(this)
 
-      this.body.setOffset(0, 50)
-
-      // For now
-      scene.anims.create({
-        key: "east",
-        frameRate: 10,
-        frames: scene.anims.generateFrameNumbers("annie_run", { start: 0, end: 11 }),
-        repeat: -1
-      });
-      this.play("east"); 
+      this.setBodySize(30, 30)
+      this.body.setOffset(10, 50)
     }
 
     getSpeedFromDir(x, y){
@@ -53,6 +63,8 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
             this.punch = true
         }else
             this.punch = false
+
+        console.log(this.anims.isPlaying)
     }
 
     aiControl(time, delta) {
@@ -79,7 +91,26 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
             this.aiControl(time, delta)
         }
 
+        // hastigheten vill till rest_speed
+        if (this.max_speed > this.rest_speed)
+            this.max_speed -= (delta/1000)
+        else if (this.max_speed < this.rest_speed)
+            this.max_speed += (delta/1000)
+
         let speed = this.getSpeedFromDir(this.dir[0], this.dir[1])
+        let a =  this.anims.animationManager.get('spring')
+        if (speed[0] != 0 || speed[1] != 0)
+            this.anims.play('spring', true)
+        else if (this.anims.currentAnim && this.anims.currentAnim.key != 'stopp')
+            this.anims.play('stopp', true)
+
+        // Flipa bild när man springer vänster
+        if (speed[0] > 0)
+            this.setFlipX(false)
+        else
+            this.setFlipX(true)
+
+        // Sätt fart
         this.setVelocityX(speed[0] * delta)
         this.setVelocityY(speed[1] * delta)
 

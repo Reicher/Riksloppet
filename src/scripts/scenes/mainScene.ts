@@ -75,8 +75,8 @@ export default class MainScene extends Phaser.Scene {
   create() {
     console.log('Main Scene')
     for(let i = 0; i < 10; i++){
-      this.updut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'peng').value = 1
-      this.neddut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'neddut').value = 1
+      this.updut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'peng').value = 2
+      this.neddut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'neddut').value = 2
     }
     for(let i = 0; i < 3; i++){
       let hinder = this.hinder.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'bil')          
@@ -129,6 +129,6 @@ export default class MainScene extends Phaser.Scene {
     if (partiledare.punch){
         annat.knocked_out = 1
         console.log('BAM')
-    }               
+    }
   }
 }

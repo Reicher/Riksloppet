@@ -7,6 +7,8 @@ export default class PreloadScene extends Phaser.Scene {
 
   preload() {
     this.load.spritesheet('annie_run', 'assets/img/Annie_spring-Sheet.png', { frameWidth: 40, frameHeight: 80})
+    this.load.spritesheet('annie_stopp', 'assets/img/Annie_stopp-Sheet.png', { frameWidth: 40, frameHeight: 80})
+    
     this.load.image('gata', 'assets/img/Gata.png');
     this.load.image('himmel', 'assets/img/Himmel och skyline.png');
 
@@ -28,7 +30,7 @@ export default class PreloadScene extends Phaser.Scene {
   create() {    
     console.log('PreLoad')
 
-    this.scene.start('SplashScene')
-    //this.scene.start('MainScene')
+    //this.scene.start('SplashScene')
+    this.scene.start('MainScene')
   }
 }
