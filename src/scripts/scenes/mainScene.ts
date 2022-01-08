@@ -5,9 +5,10 @@ export default class MainScene extends Phaser.Scene {
   riksdagen //: PartiLedare[] = new Array(0)  
   spelare : PartiLedare
   levels : Level[] = []
+  level : Level
   hinder : Phaser.Physics.Arcade.Group
 
-  goal = 700
+  goal = 1400
   cursors
 
   WIDTH : number
@@ -20,11 +21,10 @@ export default class MainScene extends Phaser.Scene {
 
   init() {    
     this.WIDTH = this.sys.game.canvas.width;
-    this.HEIGHT = this.sys.game.canvas.height;
-    let realistisk = new Level(this, this.goal, 'mark', 'bakgrund1', 'bakgrund2')
-    this.levels.push(realistisk)
+    this.HEIGHT = this.sys.game.canvas.height;    
+    this.level = new Level(this, this.goal, 'gata', 'himmel')
 
-    this.spelare = new PartiLedare(this, 50, 300, "vansterpartiet", this.input.keyboard.createCursorKeys())
+    this.spelare = new PartiLedare(this, 250, 300, "vansterpartiet", this.input.keyboard.createCursorKeys())
     let partier = [this.spelare , 
       new PartiLedare(this, 150, 300, "socialdemokraterna"), 
       new PartiLedare(this, 250, 300, "miljöpartiet"),
@@ -46,8 +46,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    let scroll_speed = 0
-    let scroll_line = 300
     let cam = this.cameras.main
 
     this.physics.world.overlap(this.riksdagen, this.hinder, this.hinderCollision)
@@ -63,14 +61,16 @@ export default class MainScene extends Phaser.Scene {
 
       ledamot.update(time, delta)
 
-      if (ledamot.x > most_x)
+      if (ledamot.x > most_x){
         most_x = ledamot.x
+        cam.centerOnX(most_x)
+      }
       
       ledamot.setVelocityX(ledamot.speed[0] * delta)
       ledamot.setVelocityY(ledamot.speed[1] * delta)
     }) 
 
-    cam.setPosition(scroll_line-most_x, 0)
+    this.level.update(time, delta, 0)
   }
 
   hinderCollision(partiledare, annat){

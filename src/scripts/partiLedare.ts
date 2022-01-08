@@ -1,10 +1,11 @@
 export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
-      cursors      
-      speed = [0, 0]
-      max_speed = 5
-      knocked_out = 0
-      punch = false
-      player = false
+    cursors      
+    speed = [0, 0]
+    max_speed = 5
+    knocked_out = 0
+    punch = false
+    player = false
+
     constructor(scene, x: number, y: number, key: string, cursors?) {
       super(scene, x, y, key);
       if (cursors){
@@ -22,7 +23,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       scene.anims.create({
         key: "east",
         frameRate: 7,
-        frames: scene.anims.generateFrameNumbers("player", { start: 28, end: 34 }),
+        frames: scene.anims.generateFrameNumbers("annie_run", { start: 0, end: 11 }),
         repeat: -1
       });
       this.play("east"); 
@@ -44,7 +45,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
         let mag = Math.abs(Math.sqrt(dir[0]*dir[0] + dir[1]*dir[1]))
         if (mag == 0)
             mag = 1
-            
+
         this.speed[0] = dir[0]/mag * this.max_speed
         this.speed[1] = dir[1]/mag * this.max_speed
 

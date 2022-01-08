@@ -13,7 +13,7 @@ const DEFAULT_HEIGHT = 540
 const config = {
   type: Phaser.AUTO,
   backgroundColor: '#ff23ff',
-  pixelArt: true,
+  pixelArt: false ,
   width: DEFAULT_WIDTH,
   height: DEFAULT_HEIGHT,
 
@@ -28,7 +28,7 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: true,
+      debug: false,
     }
   }
 }

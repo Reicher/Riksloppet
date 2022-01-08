@@ -6,9 +6,13 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    //this.load.image('backgrund', 'assets/img/Backgrund.png')
-    this.load.spritesheet('player', 'assets/img/Politiker.png', { frameWidth: 17, frameHeight: 32, endFrame: 40 });	
+    this.load.spritesheet('player', 'assets/img/Politiker.png', { frameWidth: 17, frameHeight: 32 });	
     this.load.image('peng', 'assets/img/Peng.png')
+
+    this.load.spritesheet('annie_run', 'assets/img/Annie_spring-Sheet.png', { frameWidth: 40, frameHeight: 80})
+    this.load.image('gata', 'assets/img/Gata.png');
+    this.load.image('himmel', 'assets/img/Himmel och skyline.png');
+    
 
 		// load images
     this.load.image('mark', 'assets/img/mark.png');
