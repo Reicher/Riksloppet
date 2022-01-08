@@ -2,7 +2,7 @@ import { NONE } from 'phaser'
 import PartiLedare from '../partiLedare'
 
 export default class MainScene extends Phaser.Scene {
-  riksdagen //: PartiLedare[] = new Array(0)  
+  riksdagen
   spelare : PartiLedare
   powerups : Phaser.Physics.Arcade.Group
   updut : Phaser.Physics.Arcade.Group
@@ -10,7 +10,7 @@ export default class MainScene extends Phaser.Scene {
   hinder : Phaser.Physics.Arcade.Group
   kastbar : Phaser.Physics.Arcade.Group
 
-  goal = 1400
+  goal = 2500
   cursors
 
   WIDTH : number
@@ -28,7 +28,7 @@ export default class MainScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, this.goal, this.HEIGHT, true)
 
     // Skapa Värld
-    this.physics.world.setBounds(0, 150, this.goal+100, this.HEIGHT-150)
+    this.physics.world.setBounds(0, 140, this.goal+100, this.HEIGHT-140)
     this.physics.world.setBoundsCollision()
 
     // Bakground
@@ -75,10 +75,10 @@ export default class MainScene extends Phaser.Scene {
   create() {
     console.log('Main Scene')
     for(let i = 0; i < 10; i++){
-      this.updut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'peng').value = 2
-      this.neddut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'neddut').value = 2
+      this.updut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'peng').value = 1
+      this.neddut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'neddut').value = 1
     }
-    for(let i = 0; i < 2; i++){
+    for(let i = 0; i < 3; i++){
       let hinder = this.hinder.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'bil')          
       hinder.setImmovable(true)
     }
@@ -116,17 +116,19 @@ export default class MainScene extends Phaser.Scene {
     partiledare.max_speed += updut.value
     updut.destroy()
   }
+
   neddutCollision(partiledare, neddut){   
     partiledare.max_speed -= neddut.value
     neddut.destroy() 
   }
+
   kastbarCollision(partiledare, kastbar){
-    
   }
 
   riksdagskollision(partiledare, annat){
     if (partiledare.punch){
         annat.knocked_out = 1
+        console.log('BAM')
     }               
   }
 }
