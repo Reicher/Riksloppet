@@ -9,19 +9,18 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       super(scene, x, y, key);
       if (cursors){
         this.cursors = cursors
+        this.setInteractive()
         this.player = true
       }
+      scene.add.existing(this);      
+      scene.physics.add.existing(this)
+      scene.physics.world.enable(this, 0)
+      this.setCollideWorldBounds(true)
 
-      scene.add.existing(this);
-      scene.physics.add.existing(this);
-
-      this.setInteractive() // Fyll på med info
-      this.setCollideWorldBounds()
-
-        // Change to key later....
+      // For now
       scene.anims.create({
         key: "east",
-        frameRate: 7,
+        frameRate: 10,
         frames: scene.anims.generateFrameNumbers("annie_run", { start: 0, end: 11 }),
         repeat: -1
       });
@@ -53,8 +52,6 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
         // Return speed
         return [dir[0]/mag * this.max_speed, dir[1]/mag * this.max_speed]
     }
-
-
 
     update(time, delta) {
         let speed = [0, 0]

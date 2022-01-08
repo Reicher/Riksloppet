@@ -13,7 +13,7 @@ const DEFAULT_HEIGHT = 540
 const config = {
   type: Phaser.AUTO,
   backgroundColor: '#ff23ff',
-  pixelArt: false ,
+  pixelArt: true ,
   width: DEFAULT_WIDTH,
   height: DEFAULT_HEIGHT,
 
@@ -29,6 +29,9 @@ const config = {
     default: 'arcade',
     arcade: {
       debug: false,
+      gravity: {
+        y: 0//1000
+    }
     }
   }
 }

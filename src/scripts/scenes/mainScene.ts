@@ -25,15 +25,15 @@ export default class MainScene extends Phaser.Scene {
     this.HEIGHT = this.sys.game.canvas.height;    
     this.level = new Level(this, this.goal, 'gata', 'himmel')
 
-    this.spelare = new PartiLedare(this, 50, 300, "vansterpartiet", this.input.keyboard.createCursorKeys())
+    this.spelare = new PartiLedare(this, 250, 200, "vansterpartiet", this.input.keyboard.createCursorKeys())
     let partier = [this.spelare , 
-      new PartiLedare(this, 150, 300, "socialdemokraterna"), 
-      new PartiLedare(this, 250, 300, "miljöpartiet"),
-      new PartiLedare(this, 100, 400, "sverigedemokraterna"), 
-      new PartiLedare(this, 200, 400, "moderaterna"), 
-      new PartiLedare(this, 50, 500, "liberalerna"), 
-      new PartiLedare(this, 150, 500, "kristdemokraterna"),
-      new PartiLedare(this, 250, 500, "centern")]
+      new PartiLedare(this, 150, 200, "socialdemokraterna"), 
+      new PartiLedare(this, 50, 200, "miljöpartiet"),
+      new PartiLedare(this, 100, 300, "sverigedemokraterna"), 
+      new PartiLedare(this, 200, 300, "moderaterna"), 
+      new PartiLedare(this, 50, 400, "liberalerna"), 
+      new PartiLedare(this, 150, 400, "kristdemokraterna"),
+      new PartiLedare(this, 250, 400, "centern")]
                               
     this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this, partier)
     this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
@@ -55,8 +55,6 @@ export default class MainScene extends Phaser.Scene {
     this.physics.world.overlap(this.riksdagen, this.hinder, this.hinderCollision)
     this.physics.world.overlap(this.riksdagen, this.riksdagen, this.riksdagskollision)
 
-    this.level.update(time, delta, 0)
-
     this.riksdagen.children.each((ledamot: PartiLedare) => {
 
       ledamot.update(time, delta)
@@ -72,6 +70,8 @@ export default class MainScene extends Phaser.Scene {
           this.scene.start('PostScene')          
       }
     }) 
+
+    this.level.update(time, delta)
 
   }
 
