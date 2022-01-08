@@ -7,7 +7,7 @@ export default class MainScene extends Phaser.Scene {
   powerups : Phaser.Physics.Arcade.Group
   updut : Phaser.Physics.Arcade.Group
   neddut : Phaser.Physics.Arcade.Group
-  hinder
+  hinder : Phaser.Physics.Arcade.Group
   kastbar : Phaser.Physics.Arcade.Group
 
   goal = 1400
@@ -25,20 +25,22 @@ export default class MainScene extends Phaser.Scene {
     this.WIDTH = this.sys.game.canvas.width;
     this.HEIGHT = this.sys.game.canvas.height;    
 
-    this.cameras.main.setBounds(0, 0, this.goal, this.HEIGHT)
+    this.cameras.main.setBounds(0, 0, this.goal, this.HEIGHT, true)
 
-    this.physics.world.setBounds(0, 150, this.goal, this.HEIGHT-150)
+    // Skapa Värld
+    this.physics.world.setBounds(0, 150, this.goal+100, this.HEIGHT-150)
     this.physics.world.setBoundsCollision()
 
+    // Bakground
     let himmel = this.add.tileSprite(0, 0, this.goal, this.HEIGHT, 'himmel')
     himmel.setOrigin(0).setScrollFactor(0.6)
 
     let mark = this.add.tileSprite(0, 0, this.goal, this.HEIGHT, 'gata')
-    mark.setOrigin(0).setScrollFactor(0)
+    mark.setOrigin(0).setScrollFactor(1)
 
-
+    // Spelare och motspelare
     this.spelare = new PartiLedare(this, 250, 200, "vansterpartiet", this.input.keyboard.createCursorKeys())
-    let partier = [this.spelare , 
+    let partier = [this.spelare, 
       new PartiLedare(this, 150, 200, "socialdemokraterna"), 
       new PartiLedare(this, 50, 200, "miljöpartiet"),
       new PartiLedare(this, 100, 300, "sverigedemokraterna"), 
@@ -48,36 +50,45 @@ export default class MainScene extends Phaser.Scene {
       new PartiLedare(this, 250, 400, "centern")]
 
     this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this, partier)
+    this.riksdagen.children.each((ledamot: PartiLedare) => {      
+      ledamot.setCollideWorldBounds(true)
+    })
+    
 
+    // Power ups och down
     this.updut = new Phaser.Physics.Arcade.Group(this.physics.world, this)
     this.neddut = new Phaser.Physics.Arcade.Group(this.physics.world, this)
     this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
-    this.hinder = this.physics.add.staticGroup()
+    this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
 
+    // Förgrund
     let förgrund2 = this.add.tileSprite(0, this.HEIGHT-100, this.goal, this.HEIGHT, 'förgrund2')
     förgrund2.setOrigin(0).setScrollFactor(1.5)
     förgrund2.depth = this.WIDTH +10
 
     let förgrund1 = this.add.tileSprite(0, this.HEIGHT-100, this.goal, this.HEIGHT, 'förgrund1')
     förgrund1.setOrigin(0).setScrollFactor(2)
-    förgrund1.depth = this.WIDTH +11
+    förgrund1.depth = this.WIDTH + 11
     
   }
 
   create() {
     console.log('Main Scene')
     for(let i = 0; i < 10; i++){
-      this.updut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'peng').value = 2    
+      this.updut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'peng').value = 2
       this.neddut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'neddut').value = 2
-      this.hinder.create((Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'bil'))      
     }
+    for(let i = 0; i < 2; i++){
+      let hinder = this.hinder.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'bil')          
+      hinder.setImmovable(true)
+    }
+    this.physics.add.collider(this.riksdagen, this.hinder)
+    
   }
 
   update(time, delta) {
-
-    let cam = this.cameras.main
     let most_x = 0
-    let kill_line = cam.worldView.x
+    let kill_line = this.cameras.main.worldView.x
 
     this.physics.world.overlap(this.riksdagen, this.updut, this.updutCollision)
     this.physics.world.overlap(this.riksdagen, this.neddut, this.neddutCollision)
@@ -86,11 +97,11 @@ export default class MainScene extends Phaser.Scene {
 
     this.riksdagen.children.each((ledamot: PartiLedare) => {
 
-      ledamot.update(time, delta)      
+      ledamot.update(time, delta)
 
       if (ledamot.x > most_x){
         most_x = ledamot.x
-        cam.centerOnX(most_x)
+        this.cameras.main.centerOnX(most_x)
       }
 
       if(kill_line > ledamot.x || ledamot.x > this.goal){
@@ -102,8 +113,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   updutCollision(partiledare, updut){
-      partiledare.max_speed += updut.value
-      updut.destroy()
+    partiledare.max_speed += updut.value
+    updut.destroy()
   }
   neddutCollision(partiledare, neddut){   
     partiledare.max_speed -= neddut.value
