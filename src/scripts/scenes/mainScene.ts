@@ -10,6 +10,8 @@ export default class MainScene extends Phaser.Scene {
   hinder : Phaser.Physics.Arcade.Group
   kastbar : Phaser.Physics.Arcade.Group
 
+  statist : Phaser.Physics.Arcade.Group
+
   goal = 2500
   cursors
 
@@ -60,6 +62,7 @@ export default class MainScene extends Phaser.Scene {
     this.neddut = new Phaser.Physics.Arcade.Group(this.physics.world, this)
     this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
     this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
+    this.statist = new Phaser.Physics.Arcade.Group(this.physics.world, this)
 
     // Förgrund
     let förgrund2 = this.add.tileSprite(0, this.HEIGHT-100, this.goal, this.HEIGHT, 'förgrund2')
@@ -79,8 +82,32 @@ export default class MainScene extends Phaser.Scene {
       this.neddut.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'neddut').value = 2
     }
     for(let i = 0; i < 3; i++){
-      let hinder = this.hinder.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(140, this.HEIGHT), 'bil')          
+      let hinder = this.hinder.create(Phaser.Math.Between(this.WIDTH/2, this.goal), Phaser.Math.Between(150, this.HEIGHT-100), 'bil')          
       hinder.setImmovable(true)
+    }
+    let pos_top = this.WIDTH/2
+    let pos_bot = this.WIDTH/2
+    for(let i = 0; i < 40; i++){
+      pos_top = Phaser.Math.Between(pos_top + 50, pos_top + 120)
+      pos_bot = Phaser.Math.Between(pos_bot + 50, pos_bot + 120)
+
+      let top = this.statist.create(pos_top, 130, 'statist')
+      top.anims.create({
+        key: "smält",
+        frameRate: 20,
+        frames: this.anims.generateFrameNumbers("statist", { start: 0, end: 8 }),
+        repeat: 0
+      })
+      top.value = 1
+
+      let bot = this.statist.create(pos_bot, this.HEIGHT-70, 'statist')
+      bot.anims.create({
+        key: "smält",
+        frameRate: 20,
+        frames: this.anims.generateFrameNumbers("statist", { start: 0, end: 8 }),
+        repeat: 0
+      })
+      bot.value = 1
     }
     this.physics.add.collider(this.riksdagen, this.hinder)
     
@@ -94,6 +121,7 @@ export default class MainScene extends Phaser.Scene {
     this.physics.world.overlap(this.riksdagen, this.neddut, this.neddutCollision)
     this.physics.world.overlap(this.riksdagen, this.kastbar, this.kastbarCollision)
     this.physics.world.overlap(this.riksdagen, this.riksdagen, this.riksdagskollision)
+    this.physics.world.overlap(this.riksdagen, this.statist, this.statistCollision)
 
     this.riksdagen.children.each((ledamot: PartiLedare) => {
 
@@ -122,13 +150,21 @@ export default class MainScene extends Phaser.Scene {
     neddut.destroy() 
   }
 
+  statistCollision(partiledare, statist){
+    partiledare.knocked_out = 1
+
+    statist.play('smält', true)
+    statist.once('animationcomplete', () => {
+      statist.destroy()
+    })
+  }
+
   kastbarCollision(partiledare, kastbar){
   }
 
   riksdagskollision(partiledare, annat){
     if (partiledare.punch){
-        annat.knocked_out = 1
-        console.log('BAM')
+        annat.knocked_out = 0.7
     }
   }
 }

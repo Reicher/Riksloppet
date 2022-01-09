@@ -16,7 +16,6 @@ const config = {
   pixelArt: true ,
   width: DEFAULT_WIDTH,
   height: DEFAULT_HEIGHT,
-
   scale: {
     parent: 'phaser-game',
     mode: Phaser.Scale.FIT,

@@ -105,7 +105,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
             this.anims.play('stopp', true)
 
         // Flipa bild när man springer vänster
-        if (speed[0] > 0)
+        if (speed[0] >= 0)
             this.setFlipX(false)
         else
             this.setFlipX(true)

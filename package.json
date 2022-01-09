@@ -1,8 +1,8 @@
 {
-  "name": "phaser-project-template",
-  "version": "3.55.2",
-  "description": "Phaser 3 starter template with TypeScript and webpack.",
-  "homepage": "https://github.com/yandeu/phaser-project-template#readme",
+  "name": "Riksloppet",
+  "version": "alfa 3",
+  "description": "Political swedish election times",
+  "homepage": "",
   "main": "index.js",
   "scripts": {
     "start": "webpack serve --config webpack/webpack.dev.js",
@@ -19,15 +19,16 @@
     "html5 game",
     "TypeScript",
     "webpack",
-    "starter"
+    "starter",
+    "election"
   ],
   "author": {
-    "name": "Yannick Deubel",
-    "url": "https://github.com/yandeu"
+    "name": "Robin Reicher",
+    "url": "https://github.com/Reicher"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yandeu/phaser-project-template.git"
+    "url": "https://github.com/Reicher/Riksloppet"
   },
   "template": {
     "name": "phaser-project-template",
@@ -45,7 +46,7 @@
     "@yandeu/prettier-config": "^0.0.3",
     "copy-webpack-plugin": "^10.1.0",
     "html-webpack-plugin": "^5.5.0",
-    "javascript-obfuscator": "^3.0.0",
+    "javascript-obfuscator": "^0.6.2",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "serve": "^13.0.2",
@@ -53,9 +54,9 @@
     "typescript": "^4.5.3",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^4.6.0",
+    "webpack-dev-server": "^2.4.5",
     "webpack-merge": "^5.8.0",
-    "webpack-obfuscator": "^3.5.0",
+    "webpack-obfuscator": "^0.6.2",
     "workbox-webpack-plugin": "^6.4.2"
   }
 }
