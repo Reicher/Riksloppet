@@ -99,6 +99,8 @@ export default class MainScene extends Phaser.Scene {
         repeat: 0
       })
       top.value = 1
+      top.setBodySize(60, 30)
+      top.body.setOffset(15, 70)
 
       let bot = this.statist.create(pos_bot, this.HEIGHT-70, 'statist')
       bot.anims.create({
@@ -108,6 +110,9 @@ export default class MainScene extends Phaser.Scene {
         repeat: 0
       })
       bot.value = 1
+      bot.setBodySize(60, 30)
+      bot.body.setOffset(15, 70)
+
     }
     this.physics.add.collider(this.riksdagen, this.hinder)
     
