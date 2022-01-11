@@ -1,6 +1,6 @@
 {
   "name": "Riksloppet",
-  "version": "alfa 3",
+  "version": "3.55.2",
   "description": "Political swedish election times",
   "homepage": "",
   "main": "index.js",

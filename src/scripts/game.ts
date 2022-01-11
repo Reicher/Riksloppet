@@ -13,7 +13,7 @@ const DEFAULT_HEIGHT = 540
 const config = {
   type: Phaser.AUTO,
   backgroundColor: '#ff23ff',
-  pixelArt: true ,
+  pixelArt: true,
   width: DEFAULT_WIDTH,
   height: DEFAULT_HEIGHT,
   scale: {
