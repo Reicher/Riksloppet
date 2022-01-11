@@ -8,6 +8,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.spritesheet('annie_stopp', 'assets/img/Annie_stopp-Sheet.png', { frameWidth: 40, frameHeight: 80 })
 
     this.load.spritesheet('statist', 'assets/img/statist.png', { frameWidth: 89, frameHeight: 100 })
+    this.load.image('statist_kast', 'assets/img/statist_kast.png')
 
     this.load.image('gata', 'assets/img/Gata.png')
     this.load.image('himmel', 'assets/img/Himmel och skyline.png')

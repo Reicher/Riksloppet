@@ -91,18 +91,24 @@ export default class MainScene extends Phaser.Scene {
     for (let i = 0; i < 3; i++) {
       let hinder = this.hinder.create(
         Phaser.Math.Between(this.WIDTH / 2, this.goal),
-        Phaser.Math.Between(150, this.HEIGHT - 100),
+        Phaser.Math.Between(170, this.HEIGHT - 100),
         'bil'
       )
       hinder.setImmovable(true)
+      hinder.setBodySize(170, 50)
+      hinder.body.setOffset(0, 50)
+      hinder.depth = hinder.y
     }
+
     let pos_top = this.WIDTH / 2
     let pos_bot = this.WIDTH / 2
     for (let i = 0; i < 40; i++) {
       pos_top = Phaser.Math.Between(pos_top + 50, pos_top + 120)
       pos_bot = Phaser.Math.Between(pos_bot + 50, pos_bot + 120)
 
-      let top = this.statist.create(pos_top, 130, 'statist')
+      let frame = Phaser.Math.RND.pick(['statist_kast', 'statist'])
+      let top = this.statist.create(pos_top, 130, frame)
+      
       top.anims.create({
         key: 'smält',
         frameRate: 20,
@@ -112,8 +118,10 @@ export default class MainScene extends Phaser.Scene {
       top.value = 1
       top.setBodySize(60, 30)
       top.body.setOffset(15, 70)
+      top.depth = top.y
 
-      let bot = this.statist.create(pos_bot, this.HEIGHT - 70, 'statist')
+      frame = Phaser.Math.RND.pick(['statist_kast', 'statist'])
+      let bot = this.statist.create(pos_bot, this.HEIGHT - 70, frame)
       bot.anims.create({
         key: 'smält',
         frameRate: 20,
@@ -123,6 +131,7 @@ export default class MainScene extends Phaser.Scene {
       bot.value = 1
       bot.setBodySize(60, 30)
       bot.body.setOffset(15, 70)
+      bot.depth = bot.y
     }
     this.physics.add.collider(this.riksdagen, this.hinder)
   }
