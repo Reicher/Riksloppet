@@ -15,6 +15,8 @@ export default class MainScene extends Phaser.Scene {
   goal = 2500
   cursors
 
+  vinnare : PartiLedare[]
+
   WIDTH: number
   HEIGHT: number
 
@@ -72,6 +74,8 @@ export default class MainScene extends Phaser.Scene {
     let förgrund1 = this.add.tileSprite(0, this.HEIGHT - 100, this.goal, this.HEIGHT, 'förgrund1')
     förgrund1.setOrigin(0).setScrollFactor(2)
     förgrund1.depth = this.WIDTH + 11
+
+    this.vinnare = []
   }
 
   create() {
@@ -154,11 +158,17 @@ export default class MainScene extends Phaser.Scene {
         this.cameras.main.centerOnX(most_x)
       }
 
-      if (kill_line > ledamot.x || ledamot.x > this.goal) {
+      if (kill_line > ledamot.x) {
         this.riksdagen.remove(ledamot, true, true)
-        if (ledamot.player) this.scene.start('PostScene')
+      }
+      if (ledamot.x > this.goal){
+        this.vinnare.push(ledamot)
+        this.riksdagen.remove(ledamot, true, true)        
       }
     })
+
+    if (this.riksdagen.getLength() <= 0)
+      this.scene.start('PostScene')
   }
 
   updutCollision(partiledare, updut) {

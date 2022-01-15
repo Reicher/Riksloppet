@@ -8,9 +8,11 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
   aiAction = 0
   aiDir = [0, 0]
   dir = [0, 0]
+  key = 'Politisk Vilde'
 
   constructor(scene, x: number, y: number, key: string, cursors?) {
     super(scene, x, y, 'annie_stopp')
+    this.key = key
     if (cursors) {
       this.cursors = cursors
       this.setInteractive()
