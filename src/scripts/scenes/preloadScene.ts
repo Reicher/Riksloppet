@@ -6,6 +6,8 @@ export default class PreloadScene extends Phaser.Scene {
   preload() {
     this.load.spritesheet('annie_run', 'assets/img/Annie_spring-Sheet.png', { frameWidth: 40, frameHeight: 80 })
     this.load.spritesheet('annie_stopp', 'assets/img/Annie_stopp-Sheet.png', { frameWidth: 40, frameHeight: 80 })
+    this.load.spritesheet('annie_slag', 'assets/img/Annie_slag-Sheet.png', { frameWidth: 40, frameHeight: 80 })
+    this.load.spritesheet('annie_porträtt', 'assets/img/Annie_porträtt.png', { frameWidth: 60, frameHeight: 100 })
 
     this.load.spritesheet('statist', 'assets/img/statist.png', { frameWidth: 89, frameHeight: 100 })
     this.load.image('statist_kast', 'assets/img/statist_kast.png')
@@ -19,7 +21,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('splash', 'assets/img/splash.png')
     this.load.image('title', 'assets/img/titel.png')
     this.load.image('levelSetting', 'assets/img/levelSettings.png')
-    this.load.image('charSelect', 'assets/img/charSelect.png')
+    this.load.image('char_text', 'assets/img/char_text.png')
     this.load.image('postGame', 'assets/img/postGame.png')
 
     this.load.image('bil', 'assets/img/Blå bil.png')
@@ -31,7 +33,7 @@ export default class PreloadScene extends Phaser.Scene {
   create() {
     console.log('PreLoad')
 
-    //this.scene.start('SplashScene')
-    this.scene.start('MainScene')
+    this.scene.start('SplashScene')
+    //this.scene.start('MainScene')
   }
 }

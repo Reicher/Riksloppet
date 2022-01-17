@@ -35,6 +35,14 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       repeat: 0
     })
 
+    // punching animation
+    scene.anims.create({
+      key: 'slag',
+      frameRate: 30,
+      frames: scene.anims.generateFrameNumbers('annie_slag', { start: 0, end: 5 }),
+      repeat: 0
+    })
+
     scene.add.existing(this)
     scene.physics.add.existing(this)
 
@@ -58,6 +66,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
 
     if (this.cursors.space.isDown) {
       this.punch = true
+      this.anims.play('slag')
     } else this.punch = false
 
     console.log(this.anims.isPlaying)

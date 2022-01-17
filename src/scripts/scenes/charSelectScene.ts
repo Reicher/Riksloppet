@@ -6,8 +6,16 @@ export default class CharSelectScene extends Phaser.Scene {
   create() {
     console.log('CharSelectScene')
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.add.sprite(0, 0, 'charSelect').setOrigin(0)
+    this.add.sprite(480, 75, 'char_text')
+    this.add.sprite(200, 200, 'annie_porträtt')
+    this.add.sprite(400, 200, 'annie_porträtt')
+    this.add.sprite(600, 200, 'annie_porträtt')
+    this.add.sprite(800, 200, 'annie_porträtt')
 
+    this.add.sprite(200, 400, 'annie_porträtt')
+    this.add.sprite(400, 400, 'annie_porträtt')
+    this.add.sprite(600, 400, 'annie_porträtt')
+    this.add.sprite(800, 400, 'annie_porträtt')
     //sprite.on('pointerdown', () => {
     //  sprite.setTexture(key2);
     //});
