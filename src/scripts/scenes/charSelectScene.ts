@@ -3,41 +3,36 @@ export default class CharSelectScene extends Phaser.Scene {
   constructor() {
     super({ key: 'CharSelectScene' })
   }
+
+  addPorträtt(){
+    for (let col = 1; col <= 4; col++) {
+      for (let row = 1; row <= 2; row++) {
+        let sprite = this.add.sprite((960/2)-375 + 150*col, 170*row, 'annie_porträtt').setScale(1.3)
+        sprite.setTint(0xbbbbbb)
+        sprite.setInteractive().on('pointerdown', function(this){
+          sprite.setTint(0xffffff)
+          let internal = this.add.sprite(960/2, 480, 'välj')
+          internal.setInteractive().on('pointerdown', function(this){
+            this.scene.start('MainScene')
+          }, this);
+        }, this);
+
+        sprite.setInteractive().on('hover', function(this){
+          //Något
+        }, this);
+      }
+    }
+  }
+
   create() {
     console.log('CharSelectScene')
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.add.sprite(480, 75, 'char_text')
-    this.add.sprite(200, 200, 'annie_porträtt')
-    this.add.sprite(400, 200, 'annie_porträtt')
-    this.add.sprite(600, 200, 'annie_porträtt')
-    this.add.sprite(800, 200, 'annie_porträtt')
+    this.add.sprite(960/2, 55, 'char_text').setScale(0.8)
 
-    this.add.sprite(200, 400, 'annie_porträtt')
-    this.add.sprite(400, 400, 'annie_porträtt')
-    this.add.sprite(600, 400, 'annie_porträtt')
-    this.add.sprite(800, 400, 'annie_porträtt')
-    //sprite.on('pointerdown', () => {
-    //  sprite.setTexture(key2);
-    //});
+    this.addPorträtt()
 
-    /**
-     * This is how you would dynamically import the mainScene class (with code splitting),
-     * add the mainScene to the Scene Manager
-     * and start the scene.
-     * The name of the chunk would be 'mainScene.chunk.js
-     * Find more about code splitting here: https://webpack.js.org/guides/code-splitting/
-     */
-    // let someCondition = true
-    // if (someCondition)
-    //   import(/* webpackChunkName: "mainScene" */ './mainScene').then(mainScene => {
-    //     this.scene.add('MainScene', mainScene.default, true)
-    //   })
-    // else console.log('The mainScene class will not even be loaded by the browser')
   }
 
   update() {
-    if (this.cursors.space.isDown) {
-      this.scene.start('MainScene')
-    }
   }
 }
