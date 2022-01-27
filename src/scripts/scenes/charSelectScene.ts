@@ -1,7 +1,11 @@
+import { GameObjects } from "phaser"
+
 export default class CharSelectScene extends Phaser.Scene {
   cursors
+  characters
   constructor() {
     super({ key: 'CharSelectScene' })
+    this.characters = []
   }
 
   addPorträtt(){
@@ -10,6 +14,9 @@ export default class CharSelectScene extends Phaser.Scene {
         let sprite = this.add.sprite((960/2)-375 + 150*col, 170*row, 'annie_porträtt').setScale(1.3)
         sprite.setTint(0xbbbbbb)
         sprite.setInteractive().on('pointerdown', function(this){
+          this.characters.forEach(element => {
+            element.setTint(0xbbbbbb)
+          });
           sprite.setTint(0xffffff)
           let internal = this.add.sprite(960/2, 480, 'välj')
           internal.setInteractive().on('pointerdown', function(this){
@@ -20,6 +27,7 @@ export default class CharSelectScene extends Phaser.Scene {
         sprite.setInteractive().on('hover', function(this){
           //Något
         }, this);
+        this.characters.push(sprite)
       }
     }
   }
