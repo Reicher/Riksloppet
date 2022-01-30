@@ -4,10 +4,11 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet('annie_run', 'assets/img/Annie_spring-Sheet.png', { frameWidth: 40, frameHeight: 80 })
-    this.load.spritesheet('annie_stopp', 'assets/img/Annie_stopp-Sheet.png', { frameWidth: 40, frameHeight: 80 })
-    this.load.spritesheet('annie_slag', 'assets/img/Annie_slag-Sheet.png', { frameWidth: 40, frameHeight: 80 })
-    this.load.image('annie_porträtt', 'assets/img/Annie_porträtt.png')
+    this.load.spritesheet('c_run', 'assets/img/Annie_spring-Sheet.png', { frameWidth: 40, frameHeight: 80 })
+    this.load.spritesheet('c_stopp', 'assets/img/Annie_stopp-Sheet.png', { frameWidth: 40, frameHeight: 80 })
+    this.load.spritesheet('c_slag', 'assets/img/Annie_slag-Sheet.png', { frameWidth: 40, frameHeight: 80 })
+    this.load.image('c_porträtt', 'assets/img/Annie_porträtt.png')
+    this.load.image('kd_porträtt', 'assets/img/Ebba_porträtt.png')
 
     this.load.image('logo', 'assets/img/tns-logo.png')
     this.load.image('välj', 'assets/img/välj.png')

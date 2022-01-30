@@ -11,7 +11,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
   key = 'Politisk Vilde'
 
   constructor(scene, x: number, y: number, key: string, cursors?) {
-    super(scene, x, y, 'annie_stopp')
+    super(scene, x, y, 'c_stopp')
     this.key = key
     if (cursors) {
       this.cursors = cursors
@@ -23,7 +23,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     scene.anims.create({
       key: 'spring',
       frameRate: 20,
-      frames: scene.anims.generateFrameNumbers('annie_run', { start: 0, end: 11 }),
+      frames: scene.anims.generateFrameNumbers('c_run', { start: 0, end: 11 }),
       repeat: -1
     })
 
@@ -31,7 +31,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     scene.anims.create({
       key: 'stopp',
       frameRate: 40,
-      frames: scene.anims.generateFrameNumbers('annie_stopp', { start: 0, end: 5 }),
+      frames: scene.anims.generateFrameNumbers('c_stopp', { start: 0, end: 5 }),
       repeat: 0
     })
 
@@ -39,7 +39,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     scene.anims.create({
       key: 'slag',
       frameRate: 30,
-      frames: scene.anims.generateFrameNumbers('annie_slag', { start: 0, end: 5 }),
+      frames: scene.anims.generateFrameNumbers('c_slag', { start: 0, end: 5 }),
       repeat: 0
     })
 

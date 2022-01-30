@@ -3,6 +3,7 @@ import { GameObjects } from "phaser"
 export default class CharSelectScene extends Phaser.Scene {
   cursors
   characters
+  partinamn = ['kd', 'c']
   constructor() {
     super({ key: 'CharSelectScene' })
     this.characters = []
@@ -11,7 +12,8 @@ export default class CharSelectScene extends Phaser.Scene {
   addPorträtt(){
     for (let col = 1; col <= 4; col++) {
       for (let row = 1; row <= 2; row++) {
-        let sprite = this.add.sprite((960/2)-375 + 150*col, 170*row, 'annie_porträtt').setScale(1.3)
+        let parti = this.partinamn[(col + row) % (this.partinamn.length)]
+        let sprite = this.add.sprite((960/2)-375 + 150*col, 170*row, parti + '_porträtt').setScale(1.3)
         sprite.setTint(0xbbbbbb)
         sprite.setInteractive().on('pointerdown', function(this){
           this.characters.forEach(element => {
