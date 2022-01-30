@@ -18,11 +18,9 @@ export default class SplashScene extends Phaser.Scene {
       camera.scene.scene.start('TitleScene')
     })
 
+    this.input.on('pointerdown', () => { this.scene.start('TitleScene') }, this);
+    this.input.keyboard.addKey('space').on('down', () => { this.scene.start('TitleScene') }, this);
+
     this.cameras.main.fadeIn(this.fade_time)    
-  }
-  update(time: number, delta: number): void {
-    if (this.cursors.space.isDown) {
-      this.scene.start('LevelSelectScene')
-    }
   }
 }

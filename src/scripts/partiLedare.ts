@@ -3,11 +3,10 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
   max_speed = 8
   rest_speed = 8
   knocked_out = 0
-  punch = false
+  slår = false
   player = false
   aiAction = 0
   aiDir = [0, 0]
-  dir = [0, 0]
   key = 'Politisk Vilde'
 
   constructor(scene, x: number, y: number, key: string, cursors?) {
@@ -17,6 +16,9 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       this.cursors = cursors
       this.setInteractive()
       this.player = true
+
+      scene.input.on('pointerdown', () => { this.slå() }, this, this);
+      scene.input.keyboard.addKey('space').on('down', () => { this.slå() }, this, this);
     }
 
     // Running animation
@@ -50,6 +52,19 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
     this.body.setOffset(10, 50)
   }
 
+  slå() {
+    if ( !this.slår ) {
+      this.slår = true
+      this.anims.play('slag')
+      var timer = this.scene.time.addEvent({
+        delay: 500,                // ms
+        callback: () => {this.slår = false},
+        callbackScope: this,
+        loop: false
+    });
+    }
+  }
+
   getSpeedFromDir(x, y) {
     let mag = Math.abs(Math.sqrt(x * x + y * y))
     if (mag == 0) mag = 1
@@ -58,18 +73,20 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
   }
 
   playerControl(time, delta) {
-    if (this.cursors.left.isDown) this.dir[0] = -1
-    else if (this.cursors.right.isDown) this.dir[0] = 1
+    let dir = [0, 0]
+    if (this.cursors.left.isDown) dir[0] = -1
+    else if (this.cursors.right.isDown) dir[0] = 1
 
-    if (this.cursors.up.isDown) this.dir[1] = -1
-    else if (this.cursors.down.isDown) this.dir[1] = 1
+    if (this.cursors.up.isDown) dir[1] = -1
+    else if (this.cursors.down.isDown) dir[1] = 1
 
-    if (this.cursors.space.isDown) {
-      this.punch = true
-      this.anims.play('slag')
-    } else this.punch = false
+    let mus_finger = this.scene.input.activePointer
 
-    console.log(this.anims.isPlaying)
+    if (mus_finger.isDown) {
+      dir[0] = mus_finger.x - this.x + this.scene.cameras.main.scrollX
+      dir[1] = mus_finger.y - this.y
+    }
+    return dir
   }
 
   aiControl(time, delta) {
@@ -78,25 +95,24 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       this.aiDir = [1, Phaser.Math.Between(-100, 100) / 100]
       this.aiAction = Phaser.Math.Between(0.3, 1)
     }
-    this.dir = this.aiDir
+    return this.aiDir
   }
 
   update(time, delta) {
-    this.dir = [0, 0]
+    let dir = [0, 0]
     // Check if new action
     if (this.knocked_out > 0) this.knocked_out -= delta / 1000
-    else if (this.player) this.playerControl(time, delta)
+    else if (this.player) dir = this.playerControl(time, delta)
     else {
       if (this.aiAction > 0) this.aiAction -= delta / 1000
-
-      this.aiControl(time, delta)
+      dir = this.aiControl(time, delta)
     }
 
     // hastigheten vill till rest_speed
     if (this.max_speed > this.rest_speed) this.max_speed -= delta / 1000
     else if (this.max_speed < this.rest_speed) this.max_speed += delta / 1000
 
-    let speed = this.getSpeedFromDir(this.dir[0], this.dir[1])
+    let speed = this.getSpeedFromDir(dir[0], dir[1])
     let a = this.anims.animationManager.get('spring')
     if (speed[0] != 0 || speed[1] != 0) this.anims.play('spring', true)
     else if (this.anims.currentAnim && this.anims.currentAnim.key != 'stopp') this.anims.play('stopp', true)
