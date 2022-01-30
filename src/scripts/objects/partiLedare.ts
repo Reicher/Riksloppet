@@ -1,4 +1,4 @@
-export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
+export default class Partiledare extends Phaser.Physics.Arcade.Sprite {
   cursors
   max_speed = 8
   rest_speed = 8
@@ -11,14 +11,13 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
 
   constructor(scene, x: number, y: number, key: string, cursors?) {
     super(scene, x, y, 'c_stopp')
+    this.setInteractive()
     this.key = key
     if (cursors) {
       this.cursors = cursors
-      this.setInteractive()
       this.player = true
-
-      scene.input.on('pointerdown', () => { this.slå() }, this, this);
-      scene.input.keyboard.addKey('space').on('down', () => { this.slå() }, this, this);
+      //scene.input.on('pointerdown', () => { this.slå() }, this, this);
+      //scene.input.keyboard.addKey('space').on('down', () => { this.slå() }, this, this);
     }
 
     // Running animation
@@ -44,12 +43,13 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
       frames: scene.anims.generateFrameNumbers('c_slag', { start: 0, end: 5 }),
       repeat: 0
     })
-
-    scene.add.existing(this)
+    
     scene.physics.add.existing(this)
 
     this.setBodySize(30, 30)
     this.body.setOffset(10, 50)
+
+    scene.add.existing(this)
   }
 
   slå() {
@@ -61,7 +61,7 @@ export default class PartiLedare extends Phaser.Physics.Arcade.Sprite {
         callback: () => {this.slår = false},
         callbackScope: this,
         loop: false
-    });
+      })
     }
   }
 
