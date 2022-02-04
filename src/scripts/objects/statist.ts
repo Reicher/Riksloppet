@@ -1,3 +1,5 @@
+import Partiledare from "./partiLedare"
+
 export default class Statist extends Phaser.Physics.Arcade.Sprite {
   powerup : any // Kan va null
   constructor(scene, x: number, y: number, key: string, powerup : any) {
@@ -22,6 +24,11 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
       this.powerup.setPosition(x, y-this.body.height-30)
       this.powerup.depth = this.y
     }
+  }
+
+  collidedWith(ledare: Partiledare) {
+    ledare.knockOut()
+    this.destroy()
   }
 
   destroy() {   
