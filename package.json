@@ -40,9 +40,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "phaser": "^3.55.2"
+    "eventemitter3": "^4.0.7",
+    "firebase": "^9.6.5",
+    "phaser": "^3.55.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/uuid": "^8.3.4",
     "@yandeu/prettier-config": "^0.0.3",
     "copy-webpack-plugin": "^10.1.0",
     "html-webpack-plugin": "^5.5.0",
