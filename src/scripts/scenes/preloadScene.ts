@@ -9,6 +9,8 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.spritesheet('c_slag', 'assets/img/Annie_slag-Sheet.png', { frameWidth: 40, frameHeight: 80 })
     this.load.image('c_porträtt', 'assets/img/Annie_porträtt.png')
     this.load.image('kd_porträtt', 'assets/img/Ebba_porträtt.png')
+    this.load.image('v_porträtt', 'assets/img/Nooshi_porträtt.png')
+    this.load.image('sd_porträtt', 'assets/img/Jimmie_porträtt.png')
 
     this.load.image('logo', 'assets/img/tns-logo.png')
     this.load.image('välj', 'assets/img/välj.png')

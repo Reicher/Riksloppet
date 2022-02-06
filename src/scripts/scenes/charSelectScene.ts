@@ -3,7 +3,7 @@ import { GameObjects } from "phaser"
 export default class CharSelectScene extends Phaser.Scene {
   cursors
   characters
-  partinamn = ['kd', 'c']
+  partinamn = ['kd', 'c', 'v', 'sd']
   constructor() {
     super({ key: 'CharSelectScene' })
     this.characters = []
