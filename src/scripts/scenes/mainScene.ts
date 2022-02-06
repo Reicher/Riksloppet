@@ -120,6 +120,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.physics.add.collider(this.riksdagen, this.hinder)
   }
+  
   update(time, delta) {
     let most_x = 0
     let kill_line = this.cameras.main.worldView.x
