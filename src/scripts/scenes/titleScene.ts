@@ -12,7 +12,7 @@ export default class TitleScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
     this.add.sprite(0, 0, 'title').setOrigin(0)
 
-    this.input.on('pointerdown', () => { this.scene.start('LevelSelectScene') }, this);
-    this.input.keyboard.addKey('space').on('down', () => { this.scene.start('LevelSelectScene') }, this);
+    this.input.on('pointerdown', () => { this.scene.start('CharSelectScene') }, this);
+    this.input.keyboard.addKey('space').on('down', () => { this.scene.start('CharSelectScene') }, this);
   }
 }

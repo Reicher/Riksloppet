@@ -10,6 +10,8 @@ export default class CharSelectScene extends Phaser.Scene {
   }
 
   addPorträtt(){
+
+    // Fy fan va fult asså
     for (let col = 1; col <= 4; col++) {
       for (let row = 1; row <= 2; row++) {
         let parti = this.partinamn[(col + row) % (this.partinamn.length)]
@@ -22,7 +24,8 @@ export default class CharSelectScene extends Phaser.Scene {
           sprite.setTint(0xffffff)
           let internal = this.add.sprite(960/2, 480, 'välj')
           internal.setInteractive().on('pointerdown', function(this){
-            this.scene.start('MainScene')
+            parti = sprite.texture.key.split('_')[0]
+            this.scene.start('MainScene', parti)
           }, this);
         }, this);
 

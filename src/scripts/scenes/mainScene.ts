@@ -23,7 +23,8 @@ export default class MainScene extends Phaser.Scene {
     super({ key: 'MainScene' })
   }
 
-  init() {
+  init(parti_val: string) {
+    console.log('Spelare valde: ' + parti_val)
     this.WIDTH = this.sys.game.canvas.width
     this.HEIGHT = this.sys.game.canvas.height
 
@@ -41,22 +42,31 @@ export default class MainScene extends Phaser.Scene {
     mark.setOrigin(0).setScrollFactor(1)
 
     // Spelare och motspelare
-    this.spelare = new PartiLedare(this, 250, 200, 'vansterpartiet', this.input.keyboard.createCursorKeys())
-    let partier = [
-      this.spelare,
-      new PartiLedare(this, 150, 200, 'socialdemokraterna'),
-      new PartiLedare(this, 50, 200, 'miljöpartiet'),
-      new PartiLedare(this, 100, 300, 'sverigedemokraterna'),
-      new PartiLedare(this, 200, 300, 'moderaterna'),
-      new PartiLedare(this, 50, 400, 'liberalerna'),
-      new PartiLedare(this, 150, 400, 'kristdemokraterna'),
-      new PartiLedare(this, 250, 400, 'centern')
-    ]
+    this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this)
+    let spelare =new PartiLedare(this, 250, 200, parti_val, this.input.keyboard.createCursorKeys())
+    this.riksdagen.add(spelare)
+    spelare.setCollideWorldBounds(true)
 
-    this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this, partier)
-    this.riksdagen.children.each((ledamot: any) => {
+    let partinamn = ['kd', 'c', 'v', 'sd']
+    const index = partinamn.indexOf(parti_val, 0)
+    partinamn.splice(index, 1)
+    for (let p = 0; p <= partinamn.length; p++) {
+      // Partierna ska ha startplatser som kopplas till mandat i riksdagen
+      let ledamot
+      if (partinamn[p] == 'kd')
+        ledamot = new PartiLedare(this, 150, 200, 'kd')
+      else if (partinamn[p] == 'v')
+        ledamot = new PartiLedare(this, 50, 200, 'v')
+      else if (partinamn[p] == 'c')
+        ledamot = new PartiLedare(this, 100, 300, 'c')
+      else if (partinamn[p] == 'sd')
+        ledamot = new PartiLedare(this, 200, 300, 'sd')
+      else
+        ledamot = new PartiLedare(this, 50, 400, 'VILDE')
+          
+      this.riksdagen.add(ledamot)
       ledamot.setCollideWorldBounds(true)
-    })
+    }
 
     // Power ups och down
     this.powerups = new Phaser.Physics.Arcade.Group(this.physics.world, this)
