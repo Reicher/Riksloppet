@@ -2,6 +2,7 @@ import PartiLedare from '../objects/partiLedare'
 import { PlayerActor } from '../objects/PlayerActor'
 import { PlayerController } from '../objects/PlayerController'
 import Statist from '../objects/statist'
+import { getXPostitionForLedamot } from './constants'
 
 export const enum GAME_STATE {
   SETUP,
@@ -36,7 +37,6 @@ export default class MainScene extends Phaser.Scene {
 
   init(parti_val: string) {
     console.log('Spelare valde: ' + parti_val)
-    this.state = GAME_STATE.SETUP
     this.WIDTH = this.sys.game.canvas.width
     this.HEIGHT = this.sys.game.canvas.height
     this.STREET_MAX_Y = this.HEIGHT - 100
@@ -74,7 +74,7 @@ export default class MainScene extends Phaser.Scene {
     this.vinnare = []
   }
 
-  private lineUpPlayers() {
+  lineUpPlayers() {
     const actors = this.riksdagen.getChildren().filter(object => object instanceof PlayerActor) as PlayerActor[]
     const sortedActors = actors.sort((a, b) => a.clientName.localeCompare(b.clientName))
 
@@ -82,15 +82,10 @@ export default class MainScene extends Phaser.Scene {
     const actorSpacing = streetHeight / actors.length
 
     sortedActors.forEach((actor, index) => {
-      const { height, width } = actor.getBounds()
+      const { height } = actor.getBounds()
       actor.y = this.STREET_MIN_Y - index * (actorSpacing - height / 2)
-      actor.x = width * 1.5
+      actor.x = getXPostitionForLedamot(actor.key)
     })
-  }
-
-  startGame() {
-    this.lineUpPlayers()
-    this.state = GAME_STATE.RUNNING
   }
 
   create() {
@@ -141,7 +136,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     this.physics.add.collider(this.riksdagen, this.hinder)
-    this.state = GAME_STATE.LINE_UP
   }
 
   update(time, delta) {

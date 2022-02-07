@@ -19,7 +19,7 @@ export class MultiplayerScene extends MainScene {
   }
 
   init() {
-    super.init()
+    super.init('')
 
     this.clients = new Map()
     this.client = new NetworkClient()
@@ -95,7 +95,8 @@ export class MultiplayerScene extends MainScene {
     if (this.state === GAME_STATE.LINE_UP) {
       const canStart = this.clients.size === MAX_PLAYERS
       if (canStart) {
-        this.startGame()
+        this.lineUpPlayers()
+        this.state = GAME_STATE.RUNNING
       }
     }
     super.update(time, delta)
