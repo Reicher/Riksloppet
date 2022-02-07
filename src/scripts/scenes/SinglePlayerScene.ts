@@ -1,9 +1,9 @@
 import { AIPlayerController } from '../objects/aiPlayerController'
 import { PlayerController } from '../objects/PlayerController'
 import { getRandomLedamot, PARTI_LEDAMOT } from './constants'
-import MainScene from './mainScene'
+import MainScene, { GAME_STATE } from './mainScene'
 
-const AI_PLAYER_COUNT = 4
+const AI_PLAYER_COUNT = 8
 
 export class SinglePlayerScene extends MainScene {
   constructor() {
@@ -11,6 +11,7 @@ export class SinglePlayerScene extends MainScene {
   }
 
   init(): void {
+    console.log('INIT')
     super.init()
 
     this.initializeSpelare()
@@ -31,6 +32,7 @@ export class SinglePlayerScene extends MainScene {
       PARTI_LEDAMOT.VÄNSTERPARTIST,
       this.input.keyboard.createCursorKeys()
     )
+    this.spelare.clientName = PARTI_LEDAMOT.VÄNSTERPARTIST
     this.spelare.setCollideWorldBounds()
     this.riksdagen.add(this.spelare)
   }
@@ -39,5 +41,17 @@ export class SinglePlayerScene extends MainScene {
     const player = new AIPlayerController(this, 0, 0, getRandomLedamot())
     player.setCollideWorldBounds()
     this.riksdagen.add(player)
+  }
+
+  create(): void {
+    console.log('Create SinglePlayerScene')
+    super.create()
+  }
+
+  update(time: any, delta: any): void {
+    if (this.state === GAME_STATE.LINE_UP) {
+      this.startGame()
+    }
+    super.update(time, delta)
   }
 }

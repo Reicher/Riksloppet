@@ -1,9 +1,19 @@
 import PartiLedare from '../objects/partiLedare'
+import { PlayerActor } from '../objects/PlayerActor'
+import { PlayerController } from '../objects/PlayerController'
 import Statist from '../objects/statist'
+
+export const enum GAME_STATE {
+  SETUP,
+  LOBBY,
+  LINE_UP,
+  RUNNING,
+  DONE
+}
 
 export default class MainScene extends Phaser.Scene {
   riksdagen: Phaser.Physics.Arcade.Group
-  spelare: PartiLedare
+  spelare: PlayerController
   powerups: Phaser.Physics.Arcade.Group
   hinder: Phaser.Physics.Arcade.Group
   kastbar: Phaser.Physics.Arcade.Group
@@ -11,11 +21,14 @@ export default class MainScene extends Phaser.Scene {
 
   goal = 2500
   cursors
+  state: GAME_STATE
 
-  vinnare: PartiLedare[]
+  vinnare: PlayerActor[]
 
   WIDTH: number
   HEIGHT: number
+  STREET_MAX_Y: number
+  STREET_MIN_Y: number
 
   constructor(key: string) {
     super({ key })
@@ -23,8 +36,11 @@ export default class MainScene extends Phaser.Scene {
 
   init(parti_val: string) {
     console.log('Spelare valde: ' + parti_val)
+    this.state = GAME_STATE.SETUP
     this.WIDTH = this.sys.game.canvas.width
     this.HEIGHT = this.sys.game.canvas.height
+    this.STREET_MAX_Y = this.HEIGHT - 100
+    this.STREET_MIN_Y = 170
 
     this.cameras.main.setBounds(0, 0, this.goal, this.HEIGHT, true)
 
@@ -58,6 +74,25 @@ export default class MainScene extends Phaser.Scene {
     this.vinnare = []
   }
 
+  private lineUpPlayers() {
+    const actors = this.riksdagen.getChildren().filter(object => object instanceof PlayerActor) as PlayerActor[]
+    const sortedActors = actors.sort((a, b) => a.clientName.localeCompare(b.clientName))
+
+    const streetHeight = this.STREET_MAX_Y - this.STREET_MAX_Y
+    const actorSpacing = streetHeight / actors.length
+
+    sortedActors.forEach((actor, index) => {
+      const { height, width } = actor.getBounds()
+      actor.y = this.STREET_MIN_Y - index * (actorSpacing - height / 2)
+      actor.x = width * 1.5
+    })
+  }
+
+  startGame() {
+    this.lineUpPlayers()
+    this.state = GAME_STATE.RUNNING
+  }
+
   create() {
     console.log('Main Scene')
     // ToDo: Needs to changed to be determenistic in multiplayer.
@@ -65,7 +100,7 @@ export default class MainScene extends Phaser.Scene {
     for (let i = 0; i < 3; i++) {
       let hinder = this.hinder.create(
         Phaser.Math.Between(this.WIDTH / 2, this.goal),
-        Phaser.Math.Between(170, this.HEIGHT - 100),
+        Phaser.Math.Between(this.STREET_MIN_Y, this.STREET_MAX_Y),
         'bil'
       )
       hinder.setImmovable(true)
@@ -106,9 +141,14 @@ export default class MainScene extends Phaser.Scene {
     }
 
     this.physics.add.collider(this.riksdagen, this.hinder)
+    this.state = GAME_STATE.LINE_UP
   }
 
   update(time, delta) {
+    if (this.state !== GAME_STATE.RUNNING) {
+      return
+    }
+
     let most_x = 0
     let kill_line = this.cameras.main.worldView.x
 
@@ -135,7 +175,10 @@ export default class MainScene extends Phaser.Scene {
       }
     })
 
-    if (this.riksdagen.getLength() <= 0) this.scene.start('PostScene')
+    if (this.riksdagen.getLength() <= 0) {
+      this.state = GAME_STATE.DONE
+      this.scene.start('PostScene')
+    }
   }
 
   powerupCollision(partiledare, powerup) {
