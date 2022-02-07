@@ -29,6 +29,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('levelSetting', 'assets/img/levelSettings.png')
     this.load.image('char_text', 'assets/img/char_text.png')
     this.load.image('postGame', 'assets/img/postGame.png')
+    this.load.image('game_type_select', 'assets/img/GameTypeSelectScreen.png')
 
     this.load.image('bil', 'assets/img/Blå bil.png')
 

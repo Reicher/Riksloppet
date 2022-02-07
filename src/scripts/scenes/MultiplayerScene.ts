@@ -1,9 +1,9 @@
 import { PlayerActor } from '../objects/PlayerActor'
-import MainScene from './mainScene'
+import MainScene, { GAME_STATE } from './mainScene'
 import { ClientIdentity } from '../../networking/messageTypes'
 import { DataMessage, MESSAGE_TYPE, PlayerMoveMessage } from '../../networking/dataTypes'
 import { NetworkClient } from '../../networking/NetworkClient'
-import { getRandomLedamot, PARTI_LEDAMOT } from './constants'
+import { getRandomLedamot, MAX_PLAYERS, PARTI_LEDAMOT } from './constants'
 import { PlayerController } from '../objects/PlayerController'
 
 type ConnectedClient = {
@@ -43,15 +43,16 @@ export class MultiplayerScene extends MainScene {
   }
 
   private onClientConnected({ clientId, clientName }: ClientIdentity) {
-    const player = this.createPlayerActor()
+    const player = this.createPlayerActor(clientName)
     this.clients.set(clientId, {
       clientName,
       actor: player
     })
   }
 
-  private createPlayerActor() {
+  private createPlayerActor(clientName: string) {
     const player = new PlayerActor(this.scene, 0, 0, getRandomLedamot())
+    player.clientName = clientName
     player.setCollideWorldBounds()
     this.riksdagen.add(player)
     return player
@@ -88,5 +89,15 @@ export class MultiplayerScene extends MainScene {
 
   public joinGame(clientName: string, roomId: string) {
     this.client.joinRoom(clientName, roomId)
+  }
+
+  update(time: any, delta: any): void {
+    if (this.state === GAME_STATE.LINE_UP) {
+      const canStart = this.clients.size === MAX_PLAYERS
+      if (canStart) {
+        this.startGame()
+      }
+    }
+    super.update(time, delta)
   }
 }

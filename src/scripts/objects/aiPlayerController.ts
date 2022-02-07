@@ -9,6 +9,10 @@ export class AIPlayerController extends PlayerActor {
 
   constructor(scene, x: number, y: number, key: PARTI_LEDAMOT) {
     super(scene, x, y, key)
+    this.clientName = key
+    this.dir = [0, 0]
+    this.aiAction = 0
+    console.log(`Created AI player "${this.clientName}"`)
   }
 
   aiControl(time, delta): Dir {
@@ -22,7 +26,7 @@ export class AIPlayerController extends PlayerActor {
   }
 
   update(time: any, delta: any): void {
-    let dir: Dir = [0, 0]
+    let dir: Dir = [...this.dir]
 
     if (this.knocked_out > 0) {
       this.knocked_out -= delta / 1000
