@@ -28,7 +28,7 @@ export default class CharSelectScene extends Phaser.Scene {
               'pointerdown',
               function (this) {
                 parti = sprite.texture.key.split('_')[0]
-                this.scene.start('MainScene', parti)
+                this.scene.start('SinglePlayerScene', parti)
               },
               this
             )
