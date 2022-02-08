@@ -43,6 +43,14 @@ export class LobbyScene extends Phaser.Scene {
     })
 
     const joinRoomButton = new Button('Gå med i spel', COLOR.RED)
+    joinRoomButton.onClick(() => {
+      this.clientName = clientNameInput.getValue()
+      this.roomId = roomIdInput.getValue()
+
+      if (this.clientName && this.roomId) {
+        this.joinLobby()
+      }
+    })
 
     group.setPosition({
       fromCenter: true
@@ -54,21 +62,32 @@ export class LobbyScene extends Phaser.Scene {
   }
 
   createHostedLobby() {
-    this.networkClient.createRoom(this.clientName)
     this.networkClient.addListener('room-created', roomId => {
       this.roomId = roomId
       this.createLobby()
     })
+
+    this.networkClient.createRoom(this.clientName)
+  }
+
+  joinLobby() {
+    this.networkClient.addListener('joined-room', () => {
+      this.createLobby()
+    })
+
+    this.networkClient.joinRoom(this.clientName, this.roomId)
   }
 
   createLobby() {
     UIHandler.clear()
-    const group = new Group()
-    group.addElement(new Text('Lobby', 'heading'))
 
     this.networkClient.addListener('client-connected', ({ clientName }) => {
       group.addElement(new Text(clientName, 'normal'))
     })
+
+    const group = new Group()
+    group.addElement(new Text(`Lobby ${this.roomId}`, 'heading'))
+    group.setPosition({ fromCenter: true })
 
     UIHandler.addElement(group)
   }

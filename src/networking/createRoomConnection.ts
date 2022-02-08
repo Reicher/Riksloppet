@@ -1,10 +1,15 @@
 import { addDoc, collection, CollectionReference, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore'
 import { createPeerConnection } from './createPeerConnection'
 import { firebase } from './firebase'
-import { MessageOchestrator } from './messages'
+import { MessageOchestrator } from './MessageOchestrator'
 import { ClientData } from './types'
 
-export const joinRoom = (roomId: string, clientName: string, clientId: string, ochestrator: MessageOchestrator) =>
+export const createRoomConnection = (
+  roomId: string,
+  clientName: string,
+  clientId: string,
+  ochestrator: MessageOchestrator
+) =>
   new Promise(async resolve => {
     const peerConnection = createPeerConnection()
     const roomDoc = doc(collection(firebase.db, 'rooms'), roomId.trim())

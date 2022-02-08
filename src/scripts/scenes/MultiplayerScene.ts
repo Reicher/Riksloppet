@@ -80,11 +80,10 @@ export class MultiplayerScene extends MainScene {
   }
 
   public createGame(clientName: string) {
-    this.client.createRoom(clientName)
-
-    return new Promise<string>(resolve => {
-      this.client.once('room-created', resolve)
-    })
+    // this.client.createRoom(clientName)
+    // return new Promise<string>(resolve => {
+    //   this.client.once('room-created', resolve)
+    // })
   }
 
   public joinGame(clientName: string, roomId: string) {

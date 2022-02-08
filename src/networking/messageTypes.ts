@@ -1,11 +1,11 @@
 import { DataMessage } from './dataTypes'
 
 export const enum MESSAGE_TYPE {
-  CREATE_ROOM = 0,
-  ROOM_CREATED,
-  CLIENT_CONNECTED,
-  JOIN_ROOM,
-  JOINED_ROOM
+  CREATE_ROOM = 'create-room',
+  ROOM_CREATED = 'room-created',
+  CLIENT_CONNECTED = 'client-connected',
+  JOIN_ROOM = 'join-room',
+  JOINED_ROOM = 'joined-room'
 }
 
 export type ClientEvents = {

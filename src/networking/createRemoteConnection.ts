@@ -1,6 +1,6 @@
 import { addDoc, collection, DocumentReference, getDoc, onSnapshot, setDoc } from 'firebase/firestore'
 import { createPeerConnection } from './createPeerConnection'
-import { MessageOchestrator } from './messages'
+import { MessageOchestrator } from './MessageOchestrator'
 import { ClientData } from './types'
 
 export const createRemoteConnection = async (
