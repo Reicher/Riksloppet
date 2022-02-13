@@ -1,4 +1,6 @@
-import { NetworkClient } from '../../networking/NetworkClient'
+import { HostClient } from '../../networking/HostClient'
+import { NetworkClientEmitter } from '../../networking/NetworkClient'
+import { SlaveClient } from '../../networking/SlaveClient'
 import { Button } from '../UI/Button'
 import { COLOR } from '../UI/constants'
 import { Group } from '../UI/Group'
@@ -15,7 +17,7 @@ export class LobbyScene extends Phaser.Scene {
   state: LOBBY_STATE
   clientName: string
   roomId: string
-  networkClient: NetworkClient
+  networkClient: NetworkClientEmitter
 
   constructor() {
     super({
@@ -25,11 +27,10 @@ export class LobbyScene extends Phaser.Scene {
 
   create() {
     this.createPreLobby()
-    this.networkClient = new NetworkClient()
   }
 
   createPreLobby() {
-    UIHandler.clear()
+    UIHandler.clearScreen()
     const group = new Group()
     const clientNameInput = new Textbox('Användarnamn', COLOR.GREEN)
     const roomIdInput = new Textbox('Rumsid', COLOR.GREEN)
@@ -62,33 +63,71 @@ export class LobbyScene extends Phaser.Scene {
   }
 
   createHostedLobby() {
+    UIHandler.clearScreen()
+    const group = new Group()
+    const clientsGroup = new Group()
+
+    UIHandler.addElement(group)
+
+    group.setPosition({ fromCenter: true })
+
+    const lobbyHeader = new Text(`Creating lobby...`, 'heading')
+
+    const lobbySubHeader = new Text(``, 'heading')
+
+    const divider = new Text('---------------------------------------------------', 'normal')
+
+    const startGameButton = new Button('Starta spelet', COLOR.GREEN)
+    startGameButton.onClick(() => {
+      this.scene.start('CharSelectScene', 'MultiplayerScene' as any)
+    })
+    startGameButton.hide()
+
+    group.addElement(lobbyHeader, lobbySubHeader, divider, clientsGroup, startGameButton)
+
+    clientsGroup.addElement(new Text(this.clientName, 'normal'))
+
+    this.networkClient = new HostClient(this.clientName)
     this.networkClient.addListener('room-created', roomId => {
       this.roomId = roomId
-      this.createLobby()
+      lobbyHeader.setText(`${this.clientName}'s Lobby`)
+      lobbySubHeader.setText(roomId)
+      startGameButton.show()
     })
 
-    this.networkClient.createRoom(this.clientName)
+    this.networkClient.addListener('client-connected', ({ clientName }) => {
+      clientsGroup.addElement(new Text(clientName, 'normal'))
+    })
+
+    this.networkClient.connect()
   }
 
   joinLobby() {
-    this.networkClient.addListener('joined-room', () => {
-      this.createLobby()
-    })
-
-    this.networkClient.joinRoom(this.clientName, this.roomId)
-  }
-
-  createLobby() {
-    UIHandler.clear()
-
-    this.networkClient.addListener('client-connected', ({ clientName }) => {
-      group.addElement(new Text(clientName, 'normal'))
-    })
-
+    UIHandler.clearScreen()
     const group = new Group()
-    group.addElement(new Text(`Lobby ${this.roomId}`, 'heading'))
-    group.setPosition({ fromCenter: true })
+    const clientsGroup = new Group()
 
     UIHandler.addElement(group)
+
+    group.setPosition({ fromCenter: true })
+
+    const lobbyHeader = new Text(`Lobby`, 'heading')
+    const lobbySubHeader = new Text(`Joining room...`, 'heading')
+    const divider = new Text('---------------------------------------------------', 'normal')
+
+    clientsGroup.addElement(new Text(this.clientName, 'normal'))
+
+    group.addElement(lobbyHeader, lobbySubHeader, divider, clientsGroup)
+
+    this.networkClient = new SlaveClient(this.roomId, this.clientName)
+    this.networkClient.addListener('joined-room', () => {
+      lobbySubHeader.setText(this.roomId)
+    })
+
+    this.networkClient.addListener('client-connected', ({ clientName }) => {
+      clientsGroup.addElement(new Text(clientName, 'normal'))
+    })
+
+    this.networkClient.connect()
   }
 }

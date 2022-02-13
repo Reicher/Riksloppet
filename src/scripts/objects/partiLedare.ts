@@ -71,7 +71,7 @@ export default class Partiledare extends Phaser.Physics.Arcade.Sprite {
     return [(x / mag) * this.max_speed, (y / mag) * this.max_speed]
   }
 
-  update(time, delta, dir: Dir) {
+  update(time, delta, dir: Dir = [0, 0]) {
     if (this.knocked_out > 0) {
       this.knocked_out -= delta / 1000
       dir = [0, 0]

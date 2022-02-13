@@ -1,7 +1,7 @@
 export enum PARTI_LEDAMOT {
   SOCIALDEMOKRAT = 'Maggan',
   MILJÖPARTIST = 'PerOMär',
-  SVERIGEDEMOKRAT = 'Jimpa',
+  SVERIGEDEMOKRAT = 'Jimmie',
   MODERAT = 'Uffe',
   LIBERAL = 'Nyam',
   KRISTDEMOKRAT = 'Ebba',

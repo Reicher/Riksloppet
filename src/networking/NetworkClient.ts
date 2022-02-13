@@ -1,30 +1,40 @@
 import EventEmitter from 'eventemitter3'
-import { v4 as uuid } from 'uuid'
-import { ClientEvents, CLIENT_NAME_UNKNOWN } from './messageTypes'
+import { PlayerMoveMessage } from './dataTypes'
 import { MessageOchestrator } from './MessageOchestrator'
-import { DataMessage } from './dataTypes'
+import { ClientEvents } from './messageTypes'
+import { IClient, IClientIdentity } from './types'
 
-export class NetworkClient extends EventEmitter<ClientEvents> {
-  static CLIENT_ID: string = uuid()
-  clientName: string
-  isHost: boolean
+export class NetworkClientEmitter extends EventEmitter<ClientEvents> implements IClient {
+  roomId: string
   isConnected: boolean
-  roomId?: string
+  clientName: string
+  clientId: string
   ochestrator: MessageOchestrator
+  isHost: boolean
 
-  constructor(_ochestrator = new MessageOchestrator()) {
+  constructor() {
     super()
-    this.clientName = CLIENT_NAME_UNKNOWN
-    this.ochestrator = _ochestrator
-    this.initialize()
+  }
+  getConnectedClients(): IClientIdentity[] {
+    throw new Error('Method not implemented.')
   }
 
-  protected initialize() {
-    this.isConnected = false
-    this.roomId = undefined
+  sendData(dataMessage: PlayerMoveMessage): void {
+    throw new Error('Method not implemented.')
+  }
+  connect(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+}
+
+export class NetworkClient {
+  private static theInstance: NetworkClientEmitter
+  public static get instance() {
+    if (NetworkClient.theInstance) return NetworkClient.theInstance
+    throw new Error('NetworkClient is not initialized!')
   }
 
-  public sendData(dataMessage: DataMessage) {
-    this.ochestrator.sendMessage(dataMessage)
+  public static set instance(_instance: NetworkClientEmitter) {
+    NetworkClient.theInstance = _instance
   }
 }

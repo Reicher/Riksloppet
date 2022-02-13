@@ -1,23 +1,23 @@
-import Phaser from 'phaser'
+import Phaser, { Scene } from 'phaser'
 import type { Dir } from '../../../typings/custom'
-import { MultiplayerScene } from '../scenes/MultiplayerScene'
 import { PARTI_LEDAMOT } from '../scenes/constants'
+import { IMultiplayerController } from '../scenes/types'
 import { PlayerActor } from './PlayerActor'
 
 export class PlayerController extends PlayerActor {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  multiplayer?: MultiplayerScene
+  multiplayerController: IMultiplayerController
 
   constructor(
-    scene,
+    scene: Scene,
+    controller: IMultiplayerController,
     x: number,
     y: number,
     key: PARTI_LEDAMOT,
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys,
-    multiplayer?: MultiplayerScene
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys
   ) {
     super(scene, x, y, key)
-    this.multiplayer = multiplayer
+    this.multiplayerController = controller
     this.cursors = cursors
   }
 
@@ -46,8 +46,8 @@ export class PlayerController extends PlayerActor {
     super.update(time, delta, dir)
 
     const didMove = xPrev !== this.x || yPrev !== this.y
-    if (didMove && this.multiplayer) {
-      this.multiplayer.playerMoved(this)
+    if (didMove) {
+      this.multiplayerController.playerMoved(this)
     }
   }
 }

@@ -1,23 +1,43 @@
-import { addDoc, collection, CollectionReference, doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  CollectionReference,
+  doc,
+  DocumentReference,
+  getDoc,
+  onSnapshot,
+  setDoc,
+  updateDoc
+} from 'firebase/firestore'
 import { firebase } from './firebase'
-import { NetworkClient } from './NetworkClient'
+import { v4 as uuid } from 'uuid'
 import { PeerClient } from './PeerClient'
-import { ClientData } from './types'
+import { ClientData, IClientIdentity, RoomData } from './types'
+import { NetworkClient } from './NetworkClient'
 
+// Used by clients who joins an exisitng room.
 export class SlaveClient extends PeerClient {
+  clientsDoc: CollectionReference<ClientData>
+  roomDoc: DocumentReference<RoomData>
+
+  private connectedClients: IClientIdentity[]
+
   constructor(_roomId: string, _clientName: string) {
-    const roomDoc = doc(collection(firebase.db, 'rooms'), _roomId)
+    const roomDoc = doc(collection(firebase.db, 'rooms'), _roomId) as DocumentReference<RoomData>
     const clients = collection(roomDoc, 'clients') as CollectionReference<ClientData>
-    const clientDoc = doc(clients, NetworkClient.CLIENT_ID)
+    const clientDoc = doc(clients, uuid())
 
-    super(clientDoc)
+    super(_clientName, clientDoc)
 
-    this.roomId = _roomId
-    this.clientName = _clientName
+    this.clientsDoc = clients
+    this.roomDoc = roomDoc
     this.isHost = false
+    this.connectedClients = []
+    NetworkClient.instance = this
+    this.setupListeners()
   }
 
-  protected initialize() {
+  private setupListeners() {
     this.connection.onicecandidate = ({ candidate }) => {
       if (candidate) {
         addDoc(this.answerCandidates, candidate.toJSON())
@@ -27,11 +47,50 @@ export class SlaveClient extends PeerClient {
     this.connection.onconnectionstatechange = () => {
       if (this.connection.connectionState === 'connected') {
         this.isConnected = true
+        this.setupConnectedListeners()
         this.emit('joined-room')
       }
       // ToDo: Implement client disconnect
     }
     this.ochestrator.addConnection(this.connection)
+  }
+
+  private setupConnectedListeners() {
+    getDoc(this.roomDoc).then(({ data }) => {
+      const roomData = data()
+      if (roomData) {
+        const clientIdentity = {
+          clientId: roomData.hostId,
+          clientName: roomData.hostName,
+          isHost: true
+        }
+
+        this.emit('client-connected', clientIdentity)
+        this.connectedClients.push(clientIdentity)
+      }
+    })
+    onSnapshot(this.clientsDoc, snapshot => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type === 'added' && change.doc.id !== this.clientId) {
+          const { clientName } = change.doc.data()
+
+          if (!clientName) return
+
+          const clientIdentity = {
+            clientId: change.doc.id,
+            clientName,
+            isHost: false
+          }
+
+          this.connectedClients.push(clientIdentity)
+          this.emit('client-connected', clientIdentity)
+        }
+      })
+    })
+  }
+
+  public getConnectedClients() {
+    return this.connectedClients
   }
 
   public async connect() {
@@ -51,7 +110,10 @@ export class SlaveClient extends PeerClient {
       const answerDescription = await this.connection.createAnswer()
       await this.connection.setLocalDescription(answerDescription)
 
-      await updateDoc(this.clientDoc, { answer: { sdp: answerDescription.sdp, type: answerDescription.type } })
+      await updateDoc(this.clientDoc, {
+        answer: { sdp: answerDescription.sdp, type: answerDescription.type },
+        clientName: this.clientName
+      })
     })
 
     onSnapshot(this.offerCandidates, snapshot => {

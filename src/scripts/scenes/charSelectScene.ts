@@ -1,58 +1,68 @@
-import { GameObjects } from 'phaser'
+import { Button } from '../UI/Button'
+import { COLOR } from '../UI/constants'
+import { Grid } from '../UI/Grid'
+import { Group } from '../UI/Group'
+import { PortättImage } from '../UI/PortättImage'
+import { Text } from '../UI/Text'
+import { UIHandler } from '../UI/UIHandler'
+import { Parti } from './constants'
 
 export default class CharSelectScene extends Phaser.Scene {
   cursors
   characters
-  partinamn = ['kd', 'c', 'v', 'sd']
+  partinamn: Parti[] = ['kd', 'c', 'v', 'sd']
+  selectedPortätt: PortättImage
+  mainSceneKey: string
   constructor() {
     super({ key: 'CharSelectScene' })
     this.characters = []
   }
 
-  addPorträtt() {
-    // Fy fan va fult asså
-    for (let col = 1; col <= 4; col++) {
-      for (let row = 1; row <= 2; row++) {
-        let parti = this.partinamn[(col + row) % this.partinamn.length]
-        let sprite = this.add.sprite(960 / 2 - 375 + 150 * col, 170 * row, parti + '_porträtt').setScale(1.3)
-        sprite.setTint(0xbbbbbb)
-        sprite.setInteractive().on(
-          'pointerdown',
-          function (this) {
-            this.characters.forEach(element => {
-              element.setTint(0xbbbbbb)
-            })
-            sprite.setTint(0xffffff)
-            let internal = this.add.sprite(960 / 2, 480, 'välj')
-            internal.setInteractive().on(
-              'pointerdown',
-              function (this) {
-                parti = sprite.texture.key.split('_')[0]
-                this.scene.start('SinglePlayerScene', parti)
-              },
-              this
-            )
-          },
-          this
-        )
+  init(_mainSceneKey: string) {
+    this.mainSceneKey = _mainSceneKey
+  }
 
-        sprite.setInteractive().on(
-          'hover',
-          function (this) {
-            //Något
-          },
-          this
-        )
-        this.characters.push(sprite)
+  addPorträtt() {
+    UIHandler.clearScreen()
+
+    const rows = 2
+    const columns = 4
+    const partiCount = rows * columns
+
+    const group = new Group()
+    group.setPosition({ fromCenter: true })
+
+    const porträttGrid = new Grid(rows, columns)
+    const väljButton = new Button('Välj', COLOR.GREEN)
+    väljButton.onClick(() => {
+      if (!this.selectedPortätt) {
+        console.error('No selected parti!')
+        return
       }
+      this.scene.start(this.mainSceneKey, this.selectedPortätt.parti as any)
+    })
+    väljButton.hide()
+
+    for (let i = 0; i < partiCount; i++) {
+      const parti = this.partinamn[i % this.partinamn.length]
+      const porträtt = new PortättImage(parti)
+      porträtt.onClick(() => {
+        if (this.selectedPortätt) this.selectedPortätt.setActive(false)
+
+        this.selectedPortätt = porträtt
+        porträtt.setActive(true)
+        väljButton.show()
+      })
+
+      porträttGrid.addElement(porträtt)
     }
+
+    group.addElement(new Text('Välj din löpare!', 'heading'), porträttGrid, väljButton)
+    UIHandler.addElement(group)
   }
 
   create() {
     console.log('CharSelectScene')
-    this.cursors = this.input.keyboard.createCursorKeys()
-    this.add.sprite(960 / 2, 55, 'char_text').setScale(0.8)
-
     this.addPorträtt()
   }
 

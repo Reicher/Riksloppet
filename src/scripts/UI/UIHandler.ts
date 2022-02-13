@@ -11,7 +11,7 @@ export class UIHandler {
     })
   }
 
-  static clear() {
+  static clearScreen() {
     this.elements.forEach(element => element.destroy())
   }
 }

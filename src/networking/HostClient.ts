@@ -8,17 +8,22 @@ import {
   onSnapshot,
   setDoc
 } from 'firebase/firestore'
+import { PlayerMoveMessage } from './dataTypes'
 import { firebase } from './firebase'
 import { MessageOchestrator } from './MessageOchestrator'
-import { NetworkClient } from './NetworkClient'
+import { CLIENT_NAME_UNKNOWN } from './messageTypes'
+import { NetworkClient, NetworkClientEmitter } from './NetworkClient'
 import { PeerClient } from './PeerClient'
+import { RoomData } from './types'
 
 class SubClient extends PeerClient {
   constructor(clientDoc: DocumentReference<DocumentData>, ochestrator: MessageOchestrator) {
-    super(clientDoc, ochestrator)
+    super(CLIENT_NAME_UNKNOWN, clientDoc, ochestrator)
+
+    this.setUpListeners()
   }
 
-  protected initialize(): void {
+  private setUpListeners() {
     this.connection.onicecandidate = ({ candidate }) => {
       if (candidate) {
         addDoc(this.offerCandidates, candidate.toJSON())
@@ -27,14 +32,15 @@ class SubClient extends PeerClient {
 
     this.connection.onconnectionstatechange = async () => {
       if (this.connection.connectionState === 'connected') {
-        console.log(`Remote client "${this.clientDoc.id}" successfully connected!`)
         const clientData = (await getDoc(this.clientDoc)).data()
+        console.log(`Peer connection established, data:`, clientData)
         if (clientData?.clientName === undefined) return
 
-        this.isConnected = true
+        this.clientName = clientData.clientName
         this.emit('client-connected', {
           clientName: clientData.clientName,
-          clientId: this.clientDoc.id
+          clientId: this.clientId,
+          isHost: false
         })
       }
     }
@@ -43,6 +49,7 @@ class SubClient extends PeerClient {
   }
 
   public async connect(): Promise<void> {
+    console.log('Connecting peer client...')
     const offerDescription = await this.connection.createOffer()
     await this.connection.setLocalDescription(offerDescription)
     await setDoc(this.clientDoc, { offer: { sdp: offerDescription.sdp, type: offerDescription.type } })
@@ -68,32 +75,44 @@ class SubClient extends PeerClient {
   }
 }
 
-export class HostClient extends NetworkClient {
+export class HostClient extends NetworkClientEmitter {
   private subclients: SubClient[]
+
+  clientName: string
+  clientId: string
+  ochestrator: MessageOchestrator
+
   constructor(_clientName: string) {
     super()
+
+    this.isHost = true
+    this.isConnected = false
     this.clientName = _clientName
     this.subclients = []
-
-    this.initialize()
-  }
-
-  protected initialize(): void {
-    this.isHost = true
+    this.ochestrator = new MessageOchestrator()
     this.ochestrator.setAsHost()
+
+    NetworkClient.instance = this
   }
 
-  public connect() {
-    const roomDoc = doc(collection(firebase.db, 'rooms'))
+  public async connect() {
+    console.log('Connecting host client')
+    const roomDoc = doc(collection(firebase.db, 'rooms')) as DocumentReference<RoomData>
     const roomClients = collection(roomDoc, 'clients')
+
+    await setDoc(roomDoc, {
+      hostId: this.clientId,
+      hostName: this.clientName
+    })
+
     this.roomId = roomDoc.id
     this.isConnected = true
     this.emit('room-created', this.roomId)
 
     onSnapshot(roomClients, snapshot => {
       snapshot.docChanges().forEach(change => {
-        // Someone joined the room, establish connection to it.
         if (change.type === 'added') {
+          console.log('Client connected, setting up peer connection...')
           const clientDoc = change.doc.ref
           this.createSubClient(clientDoc)
         }
@@ -101,12 +120,20 @@ export class HostClient extends NetworkClient {
     })
   }
 
+  getConnectedClients() {
+    return this.subclients
+  }
+
+  sendData(dataMessage: PlayerMoveMessage): void {
+    this.ochestrator.sendMessage(dataMessage)
+  }
+
   private createSubClient(clientDoc: DocumentReference<DocumentData>) {
     const subClient = new SubClient(clientDoc, this.ochestrator)
     subClient.addListener('client-connected', identity => {
       this.emit('client-connected', identity)
     })
-
+    subClient.connect()
     this.subclients.push(subClient)
   }
 }

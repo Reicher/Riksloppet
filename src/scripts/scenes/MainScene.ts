@@ -1,7 +1,9 @@
 import { Level } from '../objects/level'
 import { PlayerActor } from '../objects/PlayerActor'
 import { PlayerController } from '../objects/PlayerController'
-import { getXPostitionForLedamot } from './constants'
+import { UIHandler } from '../UI/UIHandler'
+import { getLedamotForParti, getXPostitionForLedamot, Parti } from './constants'
+import { IMultiplayerController } from './types'
 
 export const enum GAME_STATE {
   SETUP,
@@ -11,7 +13,7 @@ export const enum GAME_STATE {
   DONE
 }
 
-export default class MainScene extends Phaser.Scene {
+export default class MainScene extends Phaser.Scene implements IMultiplayerController {
   riksdagen: Phaser.Physics.Arcade.Group
   spelare: PlayerController
   powerups: Phaser.Physics.Arcade.Group
@@ -36,8 +38,12 @@ export default class MainScene extends Phaser.Scene {
     super({ key })
   }
 
-  init(parti_val: string) {
+  playerMoved(actor: PlayerController): void {}
+
+  init(parti_val: Parti) {
     console.log('Spelare valde: ' + parti_val)
+    UIHandler.clearScreen()
+
     this.WIDTH = this.sys.game.canvas.width
     this.HEIGHT = this.sys.game.canvas.height
     this.STREET_MAX_Y = this.HEIGHT - 100
@@ -46,6 +52,7 @@ export default class MainScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, this.goal, this.HEIGHT, true)
 
     this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this)
+    this.initializeSpelare(parti_val)
 
     // Power ups och down
     this.powerups = new Phaser.Physics.Arcade.Group(this.physics.world, this)
@@ -55,6 +62,20 @@ export default class MainScene extends Phaser.Scene {
     this.level = new Level(this, this.goal, 0, this.statist, this.hinder, this.powerups)
 
     this.vinnare = []
+  }
+
+  private initializeSpelare(parti_val: Parti) {
+    this.spelare = new PlayerController(
+      this,
+      this,
+      0,
+      0,
+      getLedamotForParti(parti_val),
+      this.input.keyboard.createCursorKeys()
+    )
+
+    this.spelare.setCollideWorldBounds()
+    this.riksdagen.add(this.spelare)
   }
 
   lineUpPlayers() {

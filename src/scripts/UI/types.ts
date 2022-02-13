@@ -6,3 +6,5 @@ export type UIPosition = {
 }
 
 export type EventHandler<TEvent extends keyof HTMLElementEventMap> = (ev: HTMLElementEventMap[TEvent]) => void
+
+export type Styles = Partial<CSSStyleDeclaration>

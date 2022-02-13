@@ -1,7 +1,8 @@
 import { SPACING } from './constants'
+import { Styles } from './types'
 import { UIElement } from './UIElement'
 
-const groupDefaultStyle = (row: boolean) => ({
+const groupDefaultStyle = (row: boolean): Styles => ({
   display: 'flex',
   flexDirection: row ? 'row' : 'column',
   rowGap: SPACING.LARGE,
@@ -16,9 +17,8 @@ export class Group extends UIElement<HTMLDivElement> {
 
   private initialize(row: boolean) {
     const divElement = document.createElement('div')
-
-    Object.assign(divElement.style, groupDefaultStyle(row))
     this.element = divElement
+    this.setStyle(groupDefaultStyle(row))
   }
 
   public addElement(...elements: UIElement[]): void {

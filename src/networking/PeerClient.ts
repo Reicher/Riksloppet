@@ -1,7 +1,8 @@
-import { EventEmitter } from 'eventemitter3'
+import EventEmitter from 'eventemitter3'
 import { collection, CollectionReference, DocumentData, DocumentReference } from 'firebase/firestore'
+import { PlayerMoveMessage } from './dataTypes'
 import { MessageOchestrator } from './MessageOchestrator'
-import { NetworkClient } from './NetworkClient'
+import { NetworkClientEmitter } from './NetworkClient'
 import { ClientData } from './types'
 
 const servers = {
@@ -13,26 +14,34 @@ const servers = {
   iceCandidatePoolSize: 10
 }
 
-export class PeerClient extends NetworkClient {
+export class PeerClient extends NetworkClientEmitter {
   clientDoc: DocumentReference<ClientData>
   offerCandidates: CollectionReference<DocumentData>
   answerCandidates: CollectionReference<DocumentData>
   connection: RTCPeerConnection
 
-  constructor(_clientDoc: DocumentReference<ClientData>, ochestrator?: MessageOchestrator) {
-    super(ochestrator)
+  isConnected: boolean
+  clientName: string
+  clientId: string
+  ochestrator: MessageOchestrator
+
+  constructor(_clientName: string, _clientDoc: DocumentReference<ClientData>, _ochestrator = new MessageOchestrator()) {
+    super()
+
+    this.clientName = _clientName
+    this.clientId = _clientDoc.id
     this.clientDoc = _clientDoc
-
-    this.initialize()
-  }
-
-  protected initialize() {
+    this.ochestrator = _ochestrator
     this.connection = new RTCPeerConnection(servers)
     this.offerCandidates = collection(this.clientDoc, 'offerCandidates')
     this.answerCandidates = collection(this.clientDoc, 'answerCandidates')
   }
 
-  public async connect() {
-    return Promise.resolve()
+  sendData(dataMessage: PlayerMoveMessage): void {
+    this.ochestrator.sendMessage(dataMessage)
+  }
+
+  connect(): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 }

@@ -1,57 +1,48 @@
 import { PlayerActor } from '../objects/PlayerActor'
-import MainScene, { GAME_STATE } from './mainScene'
-import { ClientIdentity } from '../../networking/messageTypes'
+import MainScene, { GAME_STATE } from './MainScene'
 import { DataMessage, MESSAGE_TYPE, PlayerMoveMessage } from '../../networking/dataTypes'
+import { getRandomLedamot, Parti } from './constants'
 import { NetworkClient } from '../../networking/NetworkClient'
-import { getRandomLedamot, MAX_PLAYERS, PARTI_LEDAMOT } from './constants'
+import { IClientIdentity } from '../../networking/types'
+import { UIHandler } from '../UI/UIHandler'
 import { PlayerController } from '../objects/PlayerController'
 
 type ConnectedClient = {
-  clientName: string
+  client: IClientIdentity
   actor: PlayerActor
 }
 export class MultiplayerScene extends MainScene {
-  client: NetworkClient
   clients: Map<string, ConnectedClient>
 
   constructor() {
     super('MultiplayerScene')
   }
 
-  init() {
-    super.init('')
+  init(partiVal: Parti) {
+    this.state = GAME_STATE.SETUP
+    super.init(partiVal)
 
+    UIHandler.clearScreen()
+    NetworkClient.instance.addListener('game-data', this.onGameData.bind(this))
     this.clients = new Map()
-    this.client = new NetworkClient()
-    this.client.addListener('client-connected', this.onClientConnected)
-    this.client.addListener('game-data', this.onGameData)
-
-    this.initializeSpelare()
   }
 
-  private initializeSpelare() {
-    this.spelare = new PlayerController(
-      this,
-      0,
-      0,
-      PARTI_LEDAMOT.MILJÖPARTIST,
-      this.input.keyboard.createCursorKeys(),
-      this
-    )
-    this.spelare.setCollideWorldBounds()
-    this.riksdagen.add(this.spelare)
-  }
+  create(): void {
+    super.create()
+    const connectedClients = NetworkClient.instance.getConnectedClients()
+    for (const client of connectedClients) {
+      const actor = this.createPlayerActor(client.clientName)
+      this.clients.set(client.clientId, {
+        client,
+        actor
+      })
+    }
 
-  private onClientConnected({ clientId, clientName }: ClientIdentity) {
-    const player = this.createPlayerActor(clientName)
-    this.clients.set(clientId, {
-      clientName,
-      actor: player
-    })
+    this.state = GAME_STATE.LINE_UP
   }
 
   private createPlayerActor(clientName: string) {
-    const player = new PlayerActor(this.scene, 0, 0, getRandomLedamot())
+    const player = new PlayerActor(this, 0, 0, getRandomLedamot())
     player.clientName = clientName
     player.setCollideWorldBounds()
     this.riksdagen.add(player)
@@ -74,29 +65,20 @@ export class MultiplayerScene extends MainScene {
     this.clients.get(clientId)?.actor.setPosition(x, y)
   }
 
-  public playerMoved(player: PlayerActor) {
-    const moveMessage: PlayerMoveMessage = [this.client.clientId, MESSAGE_TYPE.PLAYER_MOVE, player.x, player.y]
-    this.client.sendData(moveMessage)
-  }
-
-  public createGame(clientName: string) {
-    // this.client.createRoom(clientName)
-    // return new Promise<string>(resolve => {
-    //   this.client.once('room-created', resolve)
-    // })
-  }
-
-  public joinGame(clientName: string, roomId: string) {
-    this.client.joinRoom(clientName, roomId)
+  playerMoved(player: PlayerController): void {
+    const moveMessage: PlayerMoveMessage = [
+      NetworkClient.instance.clientId,
+      MESSAGE_TYPE.PLAYER_MOVE,
+      player.x,
+      player.y
+    ]
+    NetworkClient.instance.sendData(moveMessage)
   }
 
   update(time: any, delta: any): void {
     if (this.state === GAME_STATE.LINE_UP) {
-      const canStart = this.clients.size === MAX_PLAYERS
-      if (canStart) {
-        this.lineUpPlayers()
-        this.state = GAME_STATE.RUNNING
-      }
+      this.lineUpPlayers()
+      this.state = GAME_STATE.RUNNING
     }
     super.update(time, delta)
   }
