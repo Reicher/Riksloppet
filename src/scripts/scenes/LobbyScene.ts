@@ -1,3 +1,4 @@
+import { MESSAGE_TYPE } from '../../networking/dataTypes'
 import { HostClient } from '../../networking/HostClient'
 import { NetworkClientEmitter } from '../../networking/NetworkClient'
 import { SlaveClient } from '../../networking/SlaveClient'
@@ -79,6 +80,11 @@ export class LobbyScene extends Phaser.Scene {
 
     const startGameButton = new Button('Starta spelet', COLOR.GREEN)
     startGameButton.onClick(() => {
+      // Tell clients to go to CharacterSelect
+      this.networkClient.sendData({
+        type: MESSAGE_TYPE.GOTO_LOBBY,
+        payload: []
+      })
       this.scene.start('CharSelectScene', 'MultiplayerScene' as any)
     })
     startGameButton.hide()
@@ -126,6 +132,16 @@ export class LobbyScene extends Phaser.Scene {
 
     this.networkClient.addListener('client-connected', ({ clientName }) => {
       clientsGroup.addElement(new Text(clientName, 'normal'))
+    })
+
+    this.networkClient.addListener('game-data', data => {
+      switch (data.type) {
+        case MESSAGE_TYPE.GOTO_LOBBY:
+          this.scene.start('CharSelectScene', 'MultiplayerScene' as any)
+          break
+        default:
+          break
+      }
     })
 
     this.networkClient.connect()

@@ -1,5 +1,4 @@
 import type { DataMessage } from './dataTypes'
-import { MessageOchestrator } from './MessageOchestrator'
 
 type SessionDescription = {
   sdp?: string
@@ -23,8 +22,6 @@ export interface IClientIdentity {
 }
 
 export interface IClient extends IClientIdentity {
-  ochestrator: MessageOchestrator
-
   sendData(dataMessage: DataMessage): void
   connect(): Promise<void>
   getConnectedClients(): IClientIdentity[]

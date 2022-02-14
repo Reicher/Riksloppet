@@ -1,8 +1,17 @@
-export const enum MESSAGE_TYPE {
-    PLAYER_MOVE = 0
-}
-export type BaseDataMessage = [from: string, type: MESSAGE_TYPE]
-export type PlayerMoveMessage = [from: string, type: MESSAGE_TYPE, x: number, y: number]
+import { Parti } from '../scripts/scenes/constants'
 
-export type DataMessage = PlayerMoveMessage
-export const isDataMessage = (data: any): data is DataMessage => Array.isArray(data) && data.length >= 2
+export const enum MESSAGE_TYPE {
+  PLAYER_MOVE = 0,
+  GOTO_LOBBY,
+  CHARACTER_SELECTED
+}
+export type BaseDataMessage<TType extends MESSAGE_TYPE = MESSAGE_TYPE, TPayload extends any = []> = {
+  type: TType
+  senderId: string
+  payload: TPayload
+}
+export type PlayerMoveMessage = BaseDataMessage<MESSAGE_TYPE.PLAYER_MOVE, [x: number, y: number]>
+export type GotoLobbyMessage = BaseDataMessage<MESSAGE_TYPE.GOTO_LOBBY>
+export type CharacterSelectedMessage = BaseDataMessage<MESSAGE_TYPE.CHARACTER_SELECTED, Parti>
+
+export type DataMessage = PlayerMoveMessage | GotoLobbyMessage | CharacterSelectedMessage

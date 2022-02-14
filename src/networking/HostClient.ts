@@ -8,17 +8,15 @@ import {
   onSnapshot,
   setDoc
 } from 'firebase/firestore'
-import { PlayerMoveMessage } from './dataTypes'
 import { firebase } from './firebase'
-import { MessageOchestrator } from './MessageOchestrator'
 import { CLIENT_NAME_UNKNOWN } from './messageTypes'
 import { NetworkClient, NetworkClientEmitter } from './NetworkClient'
 import { PeerClient } from './PeerClient'
 import { RoomData } from './types'
 
 class SubClient extends PeerClient {
-  constructor(clientDoc: DocumentReference<DocumentData>, ochestrator: MessageOchestrator) {
-    super(CLIENT_NAME_UNKNOWN, clientDoc, ochestrator)
+  constructor(clientDoc: DocumentReference<DocumentData>) {
+    super(CLIENT_NAME_UNKNOWN, clientDoc)
 
     this.setUpListeners()
   }
@@ -44,12 +42,10 @@ class SubClient extends PeerClient {
         })
       }
     }
-
-    this.ochestrator.addConnection(this.connection)
   }
 
   public async connect(): Promise<void> {
-    console.log('Connecting peer client...')
+    console.log('Connecting to sub client ' + this.clientId)
     const offerDescription = await this.connection.createOffer()
     await this.connection.setLocalDescription(offerDescription)
     await setDoc(this.clientDoc, { offer: { sdp: offerDescription.sdp, type: offerDescription.type } })
@@ -78,10 +74,6 @@ class SubClient extends PeerClient {
 export class HostClient extends NetworkClientEmitter {
   private subclients: SubClient[]
 
-  clientName: string
-  clientId: string
-  ochestrator: MessageOchestrator
-
   constructor(_clientName: string) {
     super()
 
@@ -89,8 +81,6 @@ export class HostClient extends NetworkClientEmitter {
     this.isConnected = false
     this.clientName = _clientName
     this.subclients = []
-    this.ochestrator = new MessageOchestrator()
-    this.ochestrator.setAsHost()
 
     NetworkClient.instance = this
   }
@@ -124,15 +114,13 @@ export class HostClient extends NetworkClientEmitter {
     return this.subclients
   }
 
-  sendData(dataMessage: PlayerMoveMessage): void {
-    this.ochestrator.sendMessage(dataMessage)
-  }
-
   private createSubClient(clientDoc: DocumentReference<DocumentData>) {
-    const subClient = new SubClient(clientDoc, this.ochestrator)
+    const subClient = new SubClient(clientDoc)
     subClient.addListener('client-connected', identity => {
       this.emit('client-connected', identity)
     })
+    this.addConnection(subClient.connection, this.clientId)
+
     subClient.connect()
     this.subclients.push(subClient)
   }

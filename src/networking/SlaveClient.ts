@@ -33,8 +33,9 @@ export class SlaveClient extends PeerClient {
     this.roomDoc = roomDoc
     this.isHost = false
     this.connectedClients = []
-    NetworkClient.instance = this
     this.setupListeners()
+
+    NetworkClient.instance = this
   }
 
   private setupListeners() {
@@ -46,18 +47,19 @@ export class SlaveClient extends PeerClient {
 
     this.connection.onconnectionstatechange = () => {
       if (this.connection.connectionState === 'connected') {
+        console.log(`Client ${this.clientId} connected to host`)
         this.isConnected = true
         this.setupConnectedListeners()
         this.emit('joined-room')
       }
       // ToDo: Implement client disconnect
     }
-    this.ochestrator.addConnection(this.connection)
+    this.addConnection(this.connection, this.clientId)
   }
 
   private setupConnectedListeners() {
-    getDoc(this.roomDoc).then(({ data }) => {
-      const roomData = data()
+    getDoc(this.roomDoc).then(snapshot => {
+      const roomData = snapshot.data()
       if (roomData) {
         const clientIdentity = {
           clientId: roomData.hostId,
@@ -94,6 +96,7 @@ export class SlaveClient extends PeerClient {
   }
 
   public async connect() {
+    console.log(`Connecting client ${this.clientId} to host`)
     await setDoc(this.clientDoc, {
       clientName: this.clientName
     })
@@ -103,6 +106,8 @@ export class SlaveClient extends PeerClient {
       if (!clientData) return
       if (!clientData.offer) return
       if (clientData.answer) return
+
+      console.log(`Client ${this.clientId} found host`)
 
       const offerDescription = new RTCSessionDescription(clientData.offer)
       await this.connection.setRemoteDescription(offerDescription)
@@ -119,6 +124,7 @@ export class SlaveClient extends PeerClient {
     onSnapshot(this.offerCandidates, snapshot => {
       snapshot.docChanges().forEach(change => {
         if (change.type === 'added') {
+          console.log(`Client ${this.clientId} found offer candidate`)
           const candidate = new RTCIceCandidate(change.doc.data())
           this.connection.addIceCandidate(candidate)
         }

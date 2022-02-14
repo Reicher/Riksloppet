@@ -1,7 +1,7 @@
 import { PlayerActor } from '../objects/PlayerActor'
 import MainScene, { GAME_STATE } from './MainScene'
 import { DataMessage, MESSAGE_TYPE, PlayerMoveMessage } from '../../networking/dataTypes'
-import { getRandomLedamot, Parti } from './constants'
+import { getLedamotForParti, getRandomLedamot, Parti } from './constants'
 import { NetworkClient } from '../../networking/NetworkClient'
 import { IClientIdentity } from '../../networking/types'
 import { UIHandler } from '../UI/UIHandler'
@@ -24,25 +24,26 @@ export class MultiplayerScene extends MainScene {
 
     UIHandler.clearScreen()
     NetworkClient.instance.addListener('game-data', this.onGameData.bind(this))
+    NetworkClient.instance.sendData({
+      type: MESSAGE_TYPE.CHARACTER_SELECTED,
+      payload: partiVal
+    })
     this.clients = new Map()
   }
 
   create(): void {
     super.create()
-    const connectedClients = NetworkClient.instance.getConnectedClients()
-    for (const client of connectedClients) {
-      const actor = this.createPlayerActor(client.clientName)
-      this.clients.set(client.clientId, {
-        client,
-        actor
-      })
-    }
 
     this.state = GAME_STATE.LINE_UP
   }
 
-  private createPlayerActor(clientName: string) {
-    const player = new PlayerActor(this, 0, 0, getRandomLedamot())
+  private createPlayerActor(clientId: string, parti: Parti) {
+    const clientName = NetworkClient.instance
+      .getConnectedClients()
+      .find(client => client.clientId === clientId)?.clientName
+    if (!clientName) return
+
+    const player = new PlayerActor(this, 0, 0, getLedamotForParti(parti))
     player.clientName = clientName
     player.setCollideWorldBounds()
     this.riksdagen.add(player)
@@ -50,11 +51,12 @@ export class MultiplayerScene extends MainScene {
   }
 
   private onGameData(data: DataMessage) {
-    const [fromClientId, messageType, ...messageData] = data
-    switch (messageType) {
+    switch (data.type) {
       case MESSAGE_TYPE.PLAYER_MOVE:
-        this.movePlayer(fromClientId, ...messageData)
+        this.movePlayer(data.senderId, ...data.payload)
         break
+      case MESSAGE_TYPE.CHARACTER_SELECTED:
+        this.createPlayerActor(data.senderId, data.payload)
       default:
         break
     }
@@ -66,12 +68,11 @@ export class MultiplayerScene extends MainScene {
   }
 
   playerMoved(player: PlayerController): void {
-    const moveMessage: PlayerMoveMessage = [
-      NetworkClient.instance.clientId,
-      MESSAGE_TYPE.PLAYER_MOVE,
-      player.x,
-      player.y
-    ]
+    const moveMessage: PlayerMoveMessage = {
+      senderId: NetworkClient.instance.clientId,
+      type: MESSAGE_TYPE.PLAYER_MOVE,
+      payload: [player.x, player.y]
+    }
     NetworkClient.instance.sendData(moveMessage)
   }
 
