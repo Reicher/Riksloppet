@@ -21,7 +21,7 @@ export default class PreloadScene extends Phaser.Scene {
       frameWidth: 40,
       frameHeight: 80
     })
-    this.load.image('åskådare_kill', 'assets/img/åskådare_kille_bära.png')
+    this.load.image('åskådare_kille', 'assets/img/åskådare_kille_bära.png')
     this.load.image('statist_kast', 'assets/img/statist_kast.png')
 
     this.load.image('gata', 'assets/img/Gata.png')

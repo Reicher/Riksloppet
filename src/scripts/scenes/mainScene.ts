@@ -96,7 +96,7 @@ export default class MainScene extends Phaser.Scene {
       let hinder = this.hinder.create(
         Phaser.Math.Between(this.WIDTH / 2, this.goal),
         Phaser.Math.Between(this.STREET_MIN_Y, this.STREET_MAX_Y),
-        'bil'
+        'bil_röd'
       )
       hinder.setImmovable(true)
       hinder.setBodySize(170, 50)
@@ -118,7 +118,7 @@ export default class MainScene extends Phaser.Scene {
         // Top 50-70 % is downdut
         pwup = this.powerups.create(0, 0, 'neddut')
       else pwup = null
-      let frame = Phaser.Math.RND.pick(['statist_kast', 'statist'])
+      let frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille'])
       let top = new Statist(this, pos_top, 130, frame, pwup)
       this.statist.add(top, true)
 
@@ -130,7 +130,7 @@ export default class MainScene extends Phaser.Scene {
         // Top 50-70 % is downdut
         pwup = this.powerups.create(0, 0, 'neddut')
       else pwup = null
-      frame = Phaser.Math.RND.pick(['statist_kast', 'statist'])
+      frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille'])
       let bot = new Statist(this, pos_top, this.HEIGHT - 70, frame, pwup)
       this.statist.add(bot, true)
     }

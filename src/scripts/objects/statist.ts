@@ -1,8 +1,8 @@
-import Partiledare from "./partiLedare"
+import Partiledare from './partiLedare'
 
 export default class Statist extends Phaser.Physics.Arcade.Sprite {
-  powerup : any // Kan va null
-  constructor(scene, x: number, y: number, key: string, powerup : any) {
+  powerup: any // Kan va null
+  constructor(scene, x: number, y: number, key: string, powerup: any) {
     super(scene, x, y, key)
 
     scene.anims.create({
@@ -16,12 +16,12 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this)
 
     this.setBodySize(30, 30)
-    this.body.setOffset(10, 50)    
+    this.body.setOffset(10, 50)
     this.depth = this.y
 
-    if(powerup){
+    if (powerup) {
       this.powerup = powerup
-      this.powerup.setPosition(x, y-this.body.height-30)
+      this.powerup.setPosition(x, y - this.body.height - 20)
       this.powerup.depth = this.y
     }
   }
@@ -31,13 +31,12 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
     this.destroy()
   }
 
-  destroy() {   
-    if (this.powerup)
-      this.powerup.destroy(true)
+  destroy() {
+    if (this.powerup) this.powerup.destroy(true)
 
     this.play('smält', true)
-    this.once('animationcomplete', () => {      
+    this.once('animationcomplete', () => {
       super.destroy()
-    }) 
+    })
   }
 }
