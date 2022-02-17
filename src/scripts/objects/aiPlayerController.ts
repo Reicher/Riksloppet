@@ -11,7 +11,7 @@ export class AIPlayerController extends PlayerActor {
     super(scene, x, y, key)
     this.clientName = key
     this.dir = [0, 0]
-    this.aiAction = 0
+    this.aiAction = 1000000 // debug
     console.log(`Created AI player "${this.clientName}"`)
   }
 

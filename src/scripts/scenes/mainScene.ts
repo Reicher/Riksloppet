@@ -1,7 +1,6 @@
-import PartiLedare from '../objects/partiLedare'
+import { Level } from '../objects/level'
 import { PlayerActor } from '../objects/PlayerActor'
 import { PlayerController } from '../objects/PlayerController'
-import Statist from '../objects/statist'
 import { getXPostitionForLedamot } from './constants'
 
 export const enum GAME_STATE {
@@ -19,6 +18,8 @@ export default class MainScene extends Phaser.Scene {
   hinder: Phaser.Physics.Arcade.Group
   kastbar: Phaser.Physics.Arcade.Group
   statist: Phaser.Physics.Arcade.Group
+
+  level: Level
 
   goal = 2500
   cursors
@@ -44,17 +45,6 @@ export default class MainScene extends Phaser.Scene {
 
     this.cameras.main.setBounds(0, 0, this.goal, this.HEIGHT, true)
 
-    // Skapa Värld
-    this.physics.world.setBounds(0, 140, this.goal + 100, this.HEIGHT - 140)
-    this.physics.world.setBoundsCollision()
-
-    // Bakground
-    let himmel = this.add.tileSprite(0, 0, this.goal, this.HEIGHT, 'himmel')
-    himmel.setOrigin(0).setScrollFactor(0.6)
-
-    let mark = this.add.tileSprite(0, 0, this.goal, this.HEIGHT, 'gata')
-    mark.setOrigin(0).setScrollFactor(1)
-
     this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this)
 
     // Power ups och down
@@ -62,14 +52,7 @@ export default class MainScene extends Phaser.Scene {
     this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
     this.statist = new Phaser.Physics.Arcade.Group(this.physics.world, this)
 
-    // Förgrund
-    let förgrund2 = this.add.tileSprite(0, this.HEIGHT - 100, this.goal, this.HEIGHT, 'förgrund2')
-    förgrund2.setOrigin(0).setScrollFactor(1.5)
-    förgrund2.depth = this.WIDTH + 10
-
-    let förgrund1 = this.add.tileSprite(0, this.HEIGHT - 100, this.goal, this.HEIGHT, 'förgrund1')
-    förgrund1.setOrigin(0).setScrollFactor(2)
-    förgrund1.depth = this.WIDTH + 11
+    this.level = new Level(this, this.goal, 0, this.statist, this.hinder, this.powerups)
 
     this.vinnare = []
   }
@@ -90,51 +73,6 @@ export default class MainScene extends Phaser.Scene {
 
   create() {
     console.log('Main Scene')
-    // ToDo: Needs to changed to be determenistic in multiplayer.
-    // Look into seeding?
-    for (let i = 0; i < 3; i++) {
-      let hinder = this.hinder.create(
-        Phaser.Math.Between(this.WIDTH / 2, this.goal),
-        Phaser.Math.Between(this.STREET_MIN_Y, this.STREET_MAX_Y),
-        'bil_röd'
-      )
-      hinder.setImmovable(true)
-      hinder.setBodySize(170, 50)
-      hinder.body.setOffset(0, 50)
-      hinder.depth = hinder.y
-    }
-
-    let pos_top = this.WIDTH / 2
-    let pos_bot = this.WIDTH / 2
-    for (let i = 0; i < 40; i++) {
-      pos_top = Phaser.Math.Between(pos_top + 50, pos_top + 120)
-      pos_bot = Phaser.Math.Between(pos_bot + 50, pos_bot + 120)
-
-      let pwup: any
-      if (Phaser.Math.RND.integerInRange(0, 100) > 70)
-        // Top 30 % is updut
-        pwup = this.powerups.create(0, 0, 'peng')
-      else if (Phaser.Math.RND.integerInRange(0, 100) > 50)
-        // Top 50-70 % is downdut
-        pwup = this.powerups.create(0, 0, 'neddut')
-      else pwup = null
-      let frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille'])
-      let top = new Statist(this, pos_top, 130, frame, pwup)
-      this.statist.add(top, true)
-
-      pwup = null
-      if (Phaser.Math.RND.integerInRange(0, 100) > 70)
-        // Top 30 % is updut
-        pwup = this.powerups.create(0, 0, 'peng')
-      else if (Phaser.Math.RND.integerInRange(0, 100) > 50)
-        // Top 50-70 % is downdut
-        pwup = this.powerups.create(0, 0, 'neddut')
-      else pwup = null
-      frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille'])
-      let bot = new Statist(this, pos_top, this.HEIGHT - 70, frame, pwup)
-      this.statist.add(bot, true)
-    }
-
     this.physics.add.collider(this.riksdagen, this.hinder)
   }
 
@@ -147,7 +85,6 @@ export default class MainScene extends Phaser.Scene {
     let kill_line = this.cameras.main.worldView.x
 
     this.physics.world.overlap(this.riksdagen, this.powerups, this.powerupCollision)
-    //this.physics.world.overlap(this.riksdagen, this.kastbar, this.kastbarCollision)
     //this.physics.world.overlap(this.riksdagen, this.riksdagen, this.riksdagskollision)
     this.physics.world.overlap(this.riksdagen, this.statist, this.statistCollision)
 
@@ -173,6 +110,7 @@ export default class MainScene extends Phaser.Scene {
       this.state = GAME_STATE.DONE
       this.scene.start('PostScene')
     }
+    this.level.update(time, delta, kill_line + this.WIDTH)
   }
 
   powerupCollision(partiledare, powerup) {
