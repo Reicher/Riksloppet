@@ -24,7 +24,7 @@ export class GameTypeSelectScene extends Phaser.Scene {
       fromCenter: true
     })
     multiplayerButton.onClick(() => {
-      this.scene.start('LobbyScene')
+      this.scene.start('ServerConnectionScene')
     })
 
     UIHandler.addElement(singlePlayerButton, multiplayerButton)

@@ -1,5 +1,5 @@
 import { collection, CollectionReference, DocumentData, DocumentReference } from 'firebase/firestore'
-import { NetworkClientEmitter } from './NetworkClient'
+import { NetworkClient } from './NetworkClient'
 import { ClientData } from './types'
 
 const servers = {
@@ -11,7 +11,7 @@ const servers = {
   iceCandidatePoolSize: 10
 }
 
-export class PeerClient extends NetworkClientEmitter {
+export class PeerClient extends NetworkClient {
   clientDoc: DocumentReference<ClientData>
   offerCandidates: CollectionReference<DocumentData>
   answerCandidates: CollectionReference<DocumentData>

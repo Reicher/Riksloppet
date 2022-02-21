@@ -1,3 +1,4 @@
+import { GameContext } from '../objects/GameContext'
 import { Button } from '../UI/Button'
 import { COLOR } from '../UI/constants'
 import { Grid } from '../UI/Grid'
@@ -8,21 +9,18 @@ import { UIHandler } from '../UI/UIHandler'
 import { Parti } from './constants'
 
 export default class CharSelectScene extends Phaser.Scene {
-  cursors
-  characters
   partinamn: Parti[] = ['kd', 'c', 'v', 'sd']
   selectedPortätt: PortättImage
   mainSceneKey: string
+
   constructor() {
     super({ key: 'CharSelectScene' })
-    this.characters = []
   }
 
-  init(_mainSceneKey: string) {
-    this.mainSceneKey = _mainSceneKey
-  }
+  init() {}
 
-  addPorträtt() {
+  create(context: GameContext) {
+    console.log('CharSelectScene')
     UIHandler.clearScreen()
 
     const rows = 2
@@ -39,7 +37,13 @@ export default class CharSelectScene extends Phaser.Scene {
         console.error('No selected parti!')
         return
       }
-      this.scene.start(this.mainSceneKey, this.selectedPortätt.parti as any)
+      context.player.parti = this.selectedPortätt.parti
+      if (context.type === 'Multiplayer') {
+        this.scene.start('LobbyScene', context)
+        context.playersHandler?.selectParti(this.selectedPortätt.parti)
+      } else {
+        this.scene.start('MainScene', context)
+      }
     })
     väljButton.hide()
 
@@ -59,11 +63,6 @@ export default class CharSelectScene extends Phaser.Scene {
 
     group.addElement(new Text('Välj din löpare!', 'heading'), porträttGrid, väljButton)
     UIHandler.addElement(group)
-  }
-
-  create() {
-    console.log('CharSelectScene')
-    this.addPorträtt()
   }
 
   update() {}

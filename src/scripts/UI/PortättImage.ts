@@ -4,7 +4,8 @@ import { Styles } from './types'
 
 const IMAGE_SIZE = '100%'
 const defaultImageStyle: Styles = {
-  filter: 'grayscale(100%)'
+  filter: 'grayscale(100%)',
+  cursor: 'pointer'
 }
 
 const imageHoverStyle: Styles = {

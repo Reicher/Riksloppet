@@ -1,3 +1,4 @@
+import { Parti } from '../scripts/scenes/constants'
 import type { DataMessage } from './dataTypes'
 
 type SessionDescription = {
@@ -19,6 +20,10 @@ export interface IClientIdentity {
   clientName: string
   clientId: string
   isHost: boolean
+}
+
+export interface IPlayerIdentity extends IClientIdentity {
+  parti?: Parti
 }
 
 export interface IClient extends IClientIdentity {

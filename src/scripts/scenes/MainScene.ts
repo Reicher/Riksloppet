@@ -1,19 +1,24 @@
 import { Level } from '../objects/level'
 import { PlayerActor } from '../objects/PlayerActor'
 import { PlayerController } from '../objects/PlayerController'
+import { GameContext, IMultiplayerContext, ISinglePlayerContext } from '../objects/GameContext'
+import { PlayerActor } from '../objects/PlayerActor'
+import { PlayerController } from '../objects/PlayerController'
+import { RemotePlayer } from '../objects/RemotePlayer'
+import Statist from '../objects/Statist'
 import { UIHandler } from '../UI/UIHandler'
 import { getLedamotForParti, getXPostitionForLedamot, Parti } from './constants'
-import { IMultiplayerController } from './types'
 
 export const enum GAME_STATE {
   SETUP,
   LOBBY,
+  WAITING_FOR_PLAYERS,
   LINE_UP,
   RUNNING,
   DONE
 }
 
-export default class MainScene extends Phaser.Scene implements IMultiplayerController {
+export class MainScene extends Phaser.Scene {
   riksdagen: Phaser.Physics.Arcade.Group
   spelare: PlayerController
   powerups: Phaser.Physics.Arcade.Group
@@ -22,6 +27,7 @@ export default class MainScene extends Phaser.Scene implements IMultiplayerContr
   statist: Phaser.Physics.Arcade.Group
 
   level: Level
+  context: GameContext
 
   goal = 2500
   cursors
@@ -34,14 +40,13 @@ export default class MainScene extends Phaser.Scene implements IMultiplayerContr
   STREET_MAX_Y: number
   STREET_MIN_Y: number
 
-  constructor(key: string) {
-    super({ key })
+  constructor() {
+    super({ key: 'MainScene' })
   }
 
-  playerMoved(actor: PlayerController): void {}
-
-  init(parti_val: Parti) {
-    console.log('Spelare valde: ' + parti_val)
+  init(context: GameContext) {
+    console.log(`Starting a ${context.type} game.`)
+    this.state = GAME_STATE.SETUP
     UIHandler.clearScreen()
 
     this.WIDTH = this.sys.game.canvas.width
@@ -52,7 +57,6 @@ export default class MainScene extends Phaser.Scene implements IMultiplayerContr
     this.cameras.main.setBounds(0, 0, this.goal, this.HEIGHT, true)
 
     this.riksdagen = new Phaser.Physics.Arcade.Group(this.physics.world, this)
-    this.initializeSpelare(parti_val)
 
     // Power ups och down
     this.powerups = new Phaser.Physics.Arcade.Group(this.physics.world, this)
@@ -62,18 +66,45 @@ export default class MainScene extends Phaser.Scene implements IMultiplayerContr
     this.level = new Level(this, this.goal, 0, this.statist, this.hinder, this.powerups)
 
     this.vinnare = []
+
+    if (context.type === 'Multiplayer') {
+      this.initMultiplayerGame(context)
+    } else {
+      this.initSingleplayerGame(context)
+    }
   }
 
-  private initializeSpelare(parti_val: Parti) {
+  private initSingleplayerGame(context: ISinglePlayerContext) {
     this.spelare = new PlayerController(
       this,
-      this,
       0,
       0,
-      getLedamotForParti(parti_val),
+      getLedamotForParti(context.player.parti!),
       this.input.keyboard.createCursorKeys()
     )
 
+    this.spelare.clientName = context.player.clientName
+    this.spelare.setCollideWorldBounds()
+    this.riksdagen.add(this.spelare)
+  }
+
+  private initMultiplayerGame(context: IMultiplayerContext) {
+    for (const player of context.playersHandler.getConnectedPlayers()) {
+      const remotePlayer = new RemotePlayer(this, player, context.playersHandler)
+      remotePlayer.setCollideWorldBounds(true)
+      this.riksdagen.add(remotePlayer)
+    }
+
+    this.spelare = new PlayerController(
+      this,
+      0,
+      0,
+      getLedamotForParti(context.player.parti!),
+      this.input.keyboard.createCursorKeys(),
+      context.playersHandler
+    )
+
+    this.spelare.clientName = context.player.clientName
     this.spelare.setCollideWorldBounds()
     this.riksdagen.add(this.spelare)
   }
@@ -95,6 +126,9 @@ export default class MainScene extends Phaser.Scene implements IMultiplayerContr
   create() {
     console.log('Main Scene')
     this.physics.add.collider(this.riksdagen, this.hinder)
+
+    this.lineUpPlayers()
+    this.state = GAME_STATE.RUNNING
   }
 
   update(time, delta) {

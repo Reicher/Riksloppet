@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore'
 import { firebase } from './firebase'
 import { CLIENT_NAME_UNKNOWN } from './messageTypes'
-import { NetworkClient, NetworkClientEmitter } from './NetworkClient'
+import { NetworkClient } from './NetworkClient'
 import { PeerClient } from './PeerClient'
 import { RoomData } from './types'
 
@@ -71,7 +71,7 @@ class SubClient extends PeerClient {
   }
 }
 
-export class HostClient extends NetworkClientEmitter {
+export class HostClient extends NetworkClient {
   private subclients: SubClient[]
 
   constructor(_clientName: string) {
@@ -81,8 +81,6 @@ export class HostClient extends NetworkClientEmitter {
     this.isConnected = false
     this.clientName = _clientName
     this.subclients = []
-
-    NetworkClient.instance = this
   }
 
   public async connect() {

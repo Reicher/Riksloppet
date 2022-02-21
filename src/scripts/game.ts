@@ -5,10 +5,10 @@ import PreloadScene from './scenes/preloadScene'
 import SplashScene from './scenes/splashScene'
 import LevelSelectScene from './scenes/LevelSelectScene'
 import CharSelectScene from './scenes/CharSelectScene'
-import { SinglePlayerScene } from './scenes/SinglePlayerScene'
-import { MultiplayerScene } from './scenes/MultiplayerScene'
 import { GameTypeSelectScene } from './scenes/GameTypeSelectScene'
 import { LobbyScene } from './scenes/LobbyScene'
+import { MainScene } from './scenes/MainScene'
+import { ServerConnectionScene } from './scenes/ServerConnectionScene'
 
 const DEFAULT_WIDTH = 960
 const DEFAULT_HEIGHT = 540
@@ -29,14 +29,14 @@ const config = {
   scene: [
     PreloadScene,
     SplashScene,
+    ServerConnectionScene,
     GameTypeSelectScene,
     LobbyScene,
     TitleScene,
     LevelSelectScene,
     CharSelectScene,
     PostScene,
-    SinglePlayerScene,
-    MultiplayerScene
+    MainScene
   ],
   physics: {
     default: 'arcade',

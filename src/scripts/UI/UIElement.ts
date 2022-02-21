@@ -4,6 +4,8 @@ import { EventHandler, Styles, UIPosition } from './types'
 export class UIElement<TElement extends HTMLElement = HTMLElement> {
   protected element: TElement
 
+  private parent: HTMLElement
+
   constructor() {}
 
   public setPosition(position: Partial<UIPosition>) {
@@ -11,6 +13,7 @@ export class UIElement<TElement extends HTMLElement = HTMLElement> {
   }
 
   public attatch(parent = document.documentElement) {
+    this.parent = parent
     parent.appendChild(this.element)
   }
 

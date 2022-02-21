@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid'
 
 const DATA_CHANNEL_LABEL = 'DATA_CHANNEL'
 
-export class NetworkClientEmitter extends EventEmitter<ClientEvents> implements IClient {
+export class NetworkClient extends EventEmitter<ClientEvents> implements IClient {
   protected channels: Record<string, RTCDataChannel>
 
   roomId: string
@@ -85,17 +85,5 @@ export class NetworkClientEmitter extends EventEmitter<ClientEvents> implements 
 
   connect(): Promise<void> {
     throw new Error('Method not implemented.')
-  }
-}
-
-export class NetworkClient {
-  private static theInstance: NetworkClientEmitter
-  public static get instance() {
-    if (NetworkClient.theInstance) return NetworkClient.theInstance
-    throw new Error('NetworkClient is not initialized!')
-  }
-
-  public static set instance(_instance: NetworkClientEmitter) {
-    NetworkClient.theInstance = _instance
   }
 }

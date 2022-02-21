@@ -13,7 +13,6 @@ import { firebase } from './firebase'
 import { v4 as uuid } from 'uuid'
 import { PeerClient } from './PeerClient'
 import { ClientData, IClientIdentity, RoomData } from './types'
-import { NetworkClient } from './NetworkClient'
 
 // Used by clients who joins an exisitng room.
 export class SlaveClient extends PeerClient {
@@ -29,13 +28,12 @@ export class SlaveClient extends PeerClient {
 
     super(_clientName, clientDoc)
 
+    this.roomId = _roomId
     this.clientsDoc = clients
     this.roomDoc = roomDoc
     this.isHost = false
     this.connectedClients = []
     this.setupListeners()
-
-    NetworkClient.instance = this
   }
 
   private setupListeners() {
