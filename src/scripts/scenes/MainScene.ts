@@ -2,12 +2,9 @@ import { Level } from '../objects/level'
 import { PlayerActor } from '../objects/PlayerActor'
 import { PlayerController } from '../objects/PlayerController'
 import { GameContext, IMultiplayerContext, ISinglePlayerContext } from '../objects/GameContext'
-import { PlayerActor } from '../objects/PlayerActor'
-import { PlayerController } from '../objects/PlayerController'
 import { RemotePlayer } from '../objects/RemotePlayer'
-import Statist from '../objects/Statist'
 import { UIHandler } from '../UI/UIHandler'
-import { getLedamotForParti, getXPostitionForLedamot, Parti } from './constants'
+import { getLedamotForParti, getXPostitionForLedamot } from './constants'
 
 export const enum GAME_STATE {
   SETUP,

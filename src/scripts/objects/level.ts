@@ -1,19 +1,28 @@
-import Phaser from 'phaser'
-import Statist from './statist'
+import Phaser, { Scene, Physics } from 'phaser'
+import { MainScene } from '../scenes/MainScene'
+import { Difficulty } from '../scenes/types'
+import Statist from './Statist'
 
 export class Level {
-  scene
-  length
-  difficulty
-  statist
-  hinder
-  powerup
+  scene: MainScene
+  length: number
+  difficulty: Difficulty
+  statist: Physics.Arcade.Group
+  hinder: Physics.Arcade.Group
+  powerup: Physics.Arcade.Group
 
   next_hinder = 0
   next_statist_uppe = 0
   next_statist_nere = 0
 
-  constructor(scene, length, difficulty, statist, hinder, powerup) {
+  constructor(
+    scene: MainScene,
+    length: number,
+    difficulty: Difficulty,
+    statist: Physics.Arcade.Group,
+    hinder: Physics.Arcade.Group,
+    powerup: Physics.Arcade.Group
+  ) {
     this.scene = scene
     this.length = length
     this.difficulty = difficulty
@@ -59,6 +68,8 @@ export class Level {
   public createStatist(x, y) {
     let frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille']) // fler senare
 
+    // Kanske meningen att skapa en Statist per powerup?
+    // Just nu skickar vi med hela gruppen
     let statist = new Statist(this.scene, x, y, frame, this.powerup)
     this.statist.add(statist, true)
 

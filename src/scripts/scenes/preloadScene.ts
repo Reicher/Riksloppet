@@ -47,7 +47,7 @@ export default class PreloadScene extends Phaser.Scene {
   create() {
     console.log('PreLoad')
 
-    //this.scene.start('SplashScene')
-    this.scene.start('CharSelectScene')
+    this.scene.start('SplashScene')
+    // this.scene.start('CharSelectScene')
   }
 }

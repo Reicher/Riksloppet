@@ -1,8 +1,9 @@
+import { Physics, Scene } from 'phaser'
 import Partiledare from './PartiLedare'
 
 export default class Statist extends Phaser.Physics.Arcade.Sprite {
-  powerup: any // Kan va null
-  constructor(scene, x: number, y: number, key: string, powerup: any) {
+  powerup: Physics.Arcade.Group // Kan va null
+  constructor(scene: Scene, x: number, y: number, key: string, powerup: Physics.Arcade.Group) {
     super(scene, x, y, key)
 
     scene.anims.create({
@@ -21,8 +22,9 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
 
     if (powerup) {
       this.powerup = powerup
-      this.powerup.setPosition(x, y - this.body.height - 30)
-      this.powerup.depth = this.y
+      // Ledsen kod nedan :'(
+      // this.powerup.setPosition(x, y - this.body.height - 30)
+      // this.powerup.depth = this.y
     }
   }
 
