@@ -75,8 +75,11 @@ export class NetworkClient extends EventEmitter<ClientEvents> implements IClient
   }
 
   protected addConnection(peerConnection: RTCPeerConnection, clientId: string) {
-    if (this.isHost) this.addHostConnection(peerConnection, clientId)
-    this.addPeerConnection(peerConnection, clientId)
+    if (this.isHost) {
+      this.addHostConnection(peerConnection, clientId)
+    } else {
+      this.addPeerConnection(peerConnection, clientId)
+    }
   }
 
   getConnectedClients(): IClientIdentity[] {

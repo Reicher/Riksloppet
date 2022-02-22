@@ -1,25 +1,16 @@
 import Phaser, { Scene } from 'phaser'
 import type { Dir } from '../../../typings/custom'
-import { NetworkPlayersHandler } from '../../networking/NetworkPlayersHandler'
 import { PARTI_LEDAMOT } from '../scenes/constants'
 import { PlayerActor } from './PlayerActor'
 
 export class PlayerController extends PlayerActor {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  networkPlayerHandler?: NetworkPlayersHandler
 
-  constructor(
-    scene: Scene,
-    x: number,
-    y: number,
-    key: PARTI_LEDAMOT,
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys,
-    playerHandler?: NetworkPlayersHandler
-  ) {
+  constructor(scene: Scene, x: number, y: number, key: PARTI_LEDAMOT, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
     super(scene, x, y, key)
     this.setInteractive()
     this.cursors = cursors
-    this.networkPlayerHandler = playerHandler
+    this.clientName = key
   }
 
   public playerControl(time, delta) {
@@ -40,9 +31,7 @@ export class PlayerController extends PlayerActor {
   }
 
   update(time: any, delta: any): void {
-    const dir = this.playerControl(time, delta)
-    super.update(time, delta, dir)
-
-    this.networkPlayerHandler?.replicatePlayerMove(...dir)
+    this.dir = this.playerControl(time, delta)
+    super.update(time, delta)
   }
 }

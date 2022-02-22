@@ -5,6 +5,7 @@ import { GameContext, IMultiplayerContext, ISinglePlayerContext } from '../objec
 import { RemotePlayer } from '../objects/RemotePlayer'
 import { UIHandler } from '../UI/UIHandler'
 import { getLedamotForParti, getXPostitionForLedamot } from './constants'
+import { NetworkedPlayerController } from '../objects/NetworkedPlayerController'
 
 export const enum GAME_STATE {
   SETUP,
@@ -80,7 +81,6 @@ export class MainScene extends Phaser.Scene {
       this.input.keyboard.createCursorKeys()
     )
 
-    this.spelare.clientName = context.player.clientName
     this.spelare.setCollideWorldBounds()
     this.riksdagen.add(this.spelare)
   }
@@ -92,16 +92,14 @@ export class MainScene extends Phaser.Scene {
       this.riksdagen.add(remotePlayer)
     }
 
-    this.spelare = new PlayerController(
+    this.spelare = new NetworkedPlayerController(
       this,
-      0,
-      0,
       getLedamotForParti(context.player.parti!),
       this.input.keyboard.createCursorKeys(),
+      context.player.clientName,
       context.playersHandler
     )
 
-    this.spelare.clientName = context.player.clientName
     this.spelare.setCollideWorldBounds()
     this.riksdagen.add(this.spelare)
   }
@@ -112,6 +110,11 @@ export class MainScene extends Phaser.Scene {
 
     const streetHeight = this.STREET_MAX_Y - this.STREET_MAX_Y
     const actorSpacing = streetHeight / actors.length
+
+    console.log(
+      `[MainScene]`,
+      sortedActors.map(({ key }) => key)
+    )
 
     sortedActors.forEach((actor, index) => {
       const { height } = actor.getBounds()

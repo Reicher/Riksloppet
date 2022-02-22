@@ -5,7 +5,6 @@ import { getLedamotForParti } from '../scenes/constants'
 import { PlayerActor } from './PlayerActor'
 
 export class RemotePlayer extends PlayerActor {
-  private dir: Dir = [0, 0]
   constructor(scene: Phaser.Scene, client: IPlayerIdentity, networkHandler: NetworkPlayersHandler) {
     super(scene, 0, 0, getLedamotForParti(client.parti!))
     this.clientName = client.clientName
@@ -17,7 +16,7 @@ export class RemotePlayer extends PlayerActor {
     this.dir[1] = y
   }
 
-  update(time: any, delta: any, dir?: Dir): void {
-    super.update(time, delta, this.dir)
+  update(time: any, delta: any): void {
+    super.update(time, delta)
   }
 }

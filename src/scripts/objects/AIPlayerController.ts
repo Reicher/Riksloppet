@@ -4,7 +4,6 @@ import { PARTI_LEDAMOT } from '../scenes/constants'
 import { PlayerActor } from './PlayerActor'
 
 export class AIPlayerController extends PlayerActor {
-  dir: Dir
   aiAction: number
 
   constructor(scene, x: number, y: number, key: PARTI_LEDAMOT) {
@@ -26,14 +25,12 @@ export class AIPlayerController extends PlayerActor {
   }
 
   update(time: any, delta: any): void {
-    let dir: Dir = [...this.dir]
-
     if (this.knocked_out > 0) {
       this.knocked_out -= delta / 1000
     } else {
-      dir = this.aiControl(time, delta)
+      this.dir = this.aiControl(time, delta)
     }
 
-    super.update(time, delta, dir)
+    super.update(time, delta)
   }
 }

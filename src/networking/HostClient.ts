@@ -117,7 +117,7 @@ export class HostClient extends NetworkClient {
     subClient.addListener('client-connected', identity => {
       this.emit('client-connected', identity)
     })
-    this.addConnection(subClient.connection, this.clientId)
+    this.addConnection(subClient.connection, subClient.clientId)
 
     subClient.connect()
     this.subclients.push(subClient)

@@ -47,46 +47,12 @@ export class SlaveClient extends PeerClient {
       if (this.connection.connectionState === 'connected') {
         console.log(`Client ${this.clientId} connected to host`)
         this.isConnected = true
-        this.setupConnectedListeners()
+
         this.emit('joined-room')
       }
       // ToDo: Implement client disconnect
     }
     this.addConnection(this.connection, this.clientId)
-  }
-
-  private setupConnectedListeners() {
-    getDoc(this.roomDoc).then(snapshot => {
-      const roomData = snapshot.data()
-      if (roomData) {
-        const clientIdentity = {
-          clientId: roomData.hostId,
-          clientName: roomData.hostName,
-          isHost: true
-        }
-
-        this.emit('client-connected', clientIdentity)
-        this.connectedClients.push(clientIdentity)
-      }
-    })
-    onSnapshot(this.clientsDoc, snapshot => {
-      snapshot.docChanges().forEach(change => {
-        if (change.type === 'added' && change.doc.id !== this.clientId) {
-          const { clientName } = change.doc.data()
-
-          if (!clientName) return
-
-          const clientIdentity = {
-            clientId: change.doc.id,
-            clientName,
-            isHost: false
-          }
-
-          this.connectedClients.push(clientIdentity)
-          this.emit('client-connected', clientIdentity)
-        }
-      })
-    })
   }
 
   public getConnectedClients() {

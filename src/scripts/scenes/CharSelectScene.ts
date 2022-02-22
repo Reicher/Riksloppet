@@ -40,7 +40,7 @@ export default class CharSelectScene extends Phaser.Scene {
       context.player.parti = this.selectedPortätt.parti
       if (context.type === 'Multiplayer') {
         this.scene.start('LobbyScene', context)
-        context.playersHandler?.selectParti(this.selectedPortätt.parti)
+        context.playersHandler.selectParti(this.selectedPortätt.parti)
       } else {
         this.scene.start('MainScene', context)
       }

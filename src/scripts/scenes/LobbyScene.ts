@@ -1,4 +1,4 @@
-import { MESSAGE_TYPE } from '../../networking/dataTypes'
+import { DataMessage, MESSAGE_TYPE } from '../../networking/dataTypes'
 import { HostClient } from '../../networking/HostClient'
 import { NetworkClient } from '../../networking/NetworkClient'
 import { NetworkPlayersHandler } from '../../networking/NetworkPlayersHandler'
@@ -33,12 +33,11 @@ export class LobbyScene extends Phaser.Scene {
   create(context: IMultiplayerContext) {
     this.context = context
     this.clientsGroup = new Group()
-    this.clientsGroup.addElement(new Text(context.player.clientName, 'normal'))
 
-    context.playersHandler.getConnectedPlayers().forEach(this.addPlayer.bind(this))
-    context.playersHandler!.onNewPlayer = this.addPlayer.bind(this)
+    context.playersHandler.getConnectedPlayers(false).forEach(this.addPlayer.bind(this))
+    context.playersHandler.onNewPlayer = this.addPlayer.bind(this)
 
-    if (this.context.networkClient?.isHost) {
+    if (this.context.networkClient.isHost) {
       this.createHostedLobby()
     } else {
       this.joinLobby()
@@ -83,11 +82,13 @@ export class LobbyScene extends Phaser.Scene {
 
     group.addElement(lobbyHeader, lobbySubHeader, divider, this.clientsGroup)
 
-    this.context.networkClient?.on('game-data', message => {
+    const onGameData = (message: DataMessage) => {
       if (message.type === MESSAGE_TYPE.START_GAME) {
         this.scene.start('MainScene', this.context)
+        this.context.networkClient.off('game-data', onGameData)
       }
-    })
+    }
+    this.context.networkClient.on('game-data', onGameData)
   }
 
   private addPlayer(player: IPlayerIdentity) {
