@@ -1,11 +1,14 @@
 import 'phaser'
-import MainScene from './scenes/mainScene'
 import PostScene from './scenes/postScene'
 import TitleScene from './scenes/titleScene'
 import PreloadScene from './scenes/preloadScene'
 import SplashScene from './scenes/splashScene'
-import LevelSelectScene from './scenes/levelSelectScene'
-import CharSelectScene from './scenes/charSelectScene'
+import LevelSelectScene from './scenes/LevelSelectScene'
+import CharSelectScene from './scenes/CharSelectScene'
+import { GameTypeSelectScene } from './scenes/GameTypeSelectScene'
+import { LobbyScene } from './scenes/LobbyScene'
+import { MainScene } from './scenes/MainScene'
+import { ServerConnectionScene } from './scenes/ServerConnectionScene'
 
 const DEFAULT_WIDTH = 960
 const DEFAULT_HEIGHT = 540
@@ -23,7 +26,18 @@ const config = {
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT
   },
-  scene: [PreloadScene, SplashScene, TitleScene, LevelSelectScene, CharSelectScene, MainScene, PostScene],
+  scene: [
+    PreloadScene,
+    SplashScene,
+    ServerConnectionScene,
+    GameTypeSelectScene,
+    LobbyScene,
+    TitleScene,
+    LevelSelectScene,
+    CharSelectScene,
+    PostScene,
+    MainScene
+  ],
   physics: {
     default: 'arcade',
     arcade: {

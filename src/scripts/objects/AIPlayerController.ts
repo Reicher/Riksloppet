@@ -1,0 +1,36 @@
+import Phaser from 'phaser'
+import type { Dir } from '../../../typings/custom'
+import { PARTI_LEDAMOT } from '../scenes/constants'
+import { PlayerActor } from './PlayerActor'
+
+export class AIPlayerController extends PlayerActor {
+  aiAction: number
+
+  constructor(scene, x: number, y: number, key: PARTI_LEDAMOT) {
+    super(scene, x, y, key)
+    this.clientName = key
+    this.dir = [0, 0]
+    this.aiAction = 0
+    console.log(`Created AI player "${this.clientName}"`)
+  }
+
+  aiControl(time, delta): Dir {
+    // Time to take action!
+    if (this.aiAction <= 0) {
+      this.dir = [1, Phaser.Math.Between(-100, 100) / 100] as Dir
+      this.aiAction = Phaser.Math.Between(0.3, 1)
+    }
+
+    return this.dir
+  }
+
+  update(time: any, delta: any): void {
+    if (this.knocked_out > 0) {
+      this.knocked_out -= delta / 1000
+    } else {
+      this.dir = this.aiControl(time, delta)
+    }
+
+    super.update(time, delta)
+  }
+}
