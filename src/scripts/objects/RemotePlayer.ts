@@ -6,8 +6,7 @@ import { PlayerActor } from './PlayerActor'
 
 export class RemotePlayer extends PlayerActor {
   constructor(scene: Phaser.Scene, client: IPlayerIdentity, networkHandler: NetworkPlayersHandler) {
-    super(scene, 0, 0, getLedamotForParti(client.parti!))
-    this.clientName = client.clientName
+    super(scene, 0, 0, getLedamotForParti(client.parti!), client.clientName)
     networkHandler.onRemotePlayerMove(client.clientId, this.playerMoved.bind(this))
   }
 

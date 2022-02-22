@@ -6,11 +6,17 @@ import { PlayerActor } from './PlayerActor'
 export class PlayerController extends PlayerActor {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
 
-  constructor(scene: Scene, x: number, y: number, key: PARTI_LEDAMOT, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
-    super(scene, x, y, key)
+  constructor(
+    scene: Scene,
+    x: number,
+    y: number,
+    key: PARTI_LEDAMOT,
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys,
+    clientName: string = key
+  ) {
+    super(scene, x, y, key, clientName)
     this.setInteractive()
     this.cursors = cursors
-    this.clientName = key
   }
 
   public playerControl(time, delta) {

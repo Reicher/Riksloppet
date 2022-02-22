@@ -7,7 +7,7 @@ export class AIPlayerController extends PlayerActor {
   aiAction: number
 
   constructor(scene, x: number, y: number, key: PARTI_LEDAMOT) {
-    super(scene, x, y, key)
+    super(scene, x, y, key, key)
     this.clientName = key
     this.dir = [0, 0]
     this.aiAction = 0

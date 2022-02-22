@@ -40,6 +40,36 @@ export const getLedamotForParti = (parti: Parti) => {
   }
 }
 
+export const getPartiForLedamot = (ledamot: PARTI_LEDAMOT): Parti => {
+  switch (ledamot) {
+    case PARTI_LEDAMOT.CENTERPARTIST:
+      return 'c'
+    case PARTI_LEDAMOT.KRISTDEMOKRAT:
+      return 'kd'
+    case PARTI_LEDAMOT.SVERIGEDEMOKRAT:
+      return 'sd'
+    case PARTI_LEDAMOT.VÄNSTERPARTIST:
+      return 'v'
+    default:
+      return 'v'
+  }
+}
+
+export const getColorForParti = (parti: Parti) => {
+  switch (parti) {
+    case 'kd':
+      return '#005ea1'
+    case 'c':
+      return '#114838'
+    case 'v':
+      return '#ed1c24'
+    case 'sd':
+      return '#1f135b'
+    default:
+      return 'black'
+  }
+}
+
 export const getXPostitionForLedamot = (ledamot: PARTI_LEDAMOT) => {
   if (ledamot in LEDAMOT_START_POSITION) return LEDAMOT_START_POSITION[ledamot].x
   return 0

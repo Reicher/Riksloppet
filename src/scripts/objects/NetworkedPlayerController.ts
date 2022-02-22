@@ -13,9 +13,7 @@ export class NetworkedPlayerController extends PlayerController {
     clientName: string,
     networkPlayerHandler: NetworkPlayersHandler
   ) {
-    super(scene, 0, 0, key, cursors)
-
-    this.clientName = clientName
+    super(scene, 0, 0, key, cursors, clientName)
     this.networkPlayerHandler = networkPlayerHandler
   }
 
