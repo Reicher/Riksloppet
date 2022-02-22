@@ -65,12 +65,12 @@ export class Level {
     hinder.depth = hinder.y
   }
 
-  public createStatist(x, y) {
+  public createStatist(x, y, pwr) {
     let frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille']) // fler senare
 
     // Kanske meningen att skapa en Statist per powerup?
     // Just nu skickar vi med hela gruppen
-    let statist = new Statist(this.scene, x, y, frame, this.powerup)
+    let statist = new Statist(this.scene, x, y, frame, pwr)
     this.statist.add(statist, true)
 
     statist.setOrigin(0, 0.5)
@@ -88,12 +88,14 @@ export class Level {
 
     if (horizon > this.next_statist_uppe) {
       this.next_statist_uppe = horizon + Phaser.Math.Between(40, 100)
-      this.createStatist(horizon, 130)
+      let pwr = this.powerup.create(horizon + 20, 100, 'peng')
+      this.createStatist(horizon, 130, pwr)
     }
 
     if (horizon > this.next_statist_nere) {
       this.next_statist_nere = horizon + Phaser.Math.Between(40, 100)
-      this.createStatist(horizon, this.scene.HEIGHT - 70)
+      let pwr = this.powerup.create(horizon + 20, this.scene.HEIGHT - 155, 'peng')
+      this.createStatist(horizon, this.scene.HEIGHT - 90, pwr)
     }
   }
 }

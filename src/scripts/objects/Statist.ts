@@ -2,14 +2,22 @@ import { Physics, Scene } from 'phaser'
 import Partiledare from './PartiLedare'
 
 export default class Statist extends Phaser.Physics.Arcade.Sprite {
-  powerup: Physics.Arcade.Group // Kan va null
-  constructor(scene: Scene, x: number, y: number, key: string, powerup: Physics.Arcade.Group) {
+  powerup: Physics.Arcade.Sprite // Kan va null
+  powerup_tween
+  constructor(scene: Scene, x: number, y: number, key: string, powerup: Physics.Arcade.Sprite) {
     super(scene, x, y, key)
 
     scene.anims.create({
       key: 'smält',
       frameRate: 20,
       frames: this.anims.generateFrameNumbers('statist', { start: 0, end: 8 }),
+      repeat: 0
+    })
+
+    scene.anims.create({
+      key: 'kasta',
+      frameRate: 15,
+      frames: this.anims.generateFrameNumbers('åskådare_kille_kast', { start: 0, end: 4 }),
       repeat: 0
     })
 
@@ -22,10 +30,38 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
 
     if (powerup) {
       this.powerup = powerup
-      // Ledsen kod nedan :'(
-      // this.powerup.setPosition(x, y - this.body.height - 30)
-      // this.powerup.depth = this.y
+
+      let goal = 0
+      if (y < 400) {
+        this.powerup.setOrigin(0.5, 1)
+        goal = Phaser.Math.Between(this.y + 50, 500) // kanske måste finetuna
+      } else {
+        this.powerup.setOrigin(0.5, 0)
+        goal = Phaser.Math.Between(200, this.y - 50) // kanske måste finetuna
+      }
+
+      this.powerup.depth = this.y
+      scene.physics.add.existing(this)
+
+      this.powerup_tween = this.scene.tweens.add({
+        targets: this.powerup,
+        y: { from: this.y, to: goal },
+        ease: 'Linear', // 'Cubic', 'Elastic', 'Bounce', 'Back'
+        duration: 1000,
+        paused: true
+      })
+
+      var timer = scene.time.addEvent({
+        delay: Phaser.Math.Between(500, 5600), // ms
+        callback: this.kasta,
+        callbackScope: this
+      })
     }
+  }
+
+  kasta() {
+    this.play('kasta', true)
+    this.powerup_tween.play()
   }
 
   collidedWith(ledare: Partiledare) {
@@ -40,5 +76,9 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
     this.once('animationcomplete', () => {
       super.destroy()
     })
+  }
+
+  update(...args: any[]): void {
+    this.powerup.depth = this.powerup.y
   }
 }

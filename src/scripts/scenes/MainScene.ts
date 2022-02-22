@@ -168,6 +168,7 @@ export class MainScene extends Phaser.Scene {
     this.level.update(time, delta, kill_line + this.WIDTH)
   }
 
+  // De här verkar inte funka så bra, kanske ska vi i Level
   powerupCollision(partiledare, powerup) {
     if (powerup.key == 'peng') partiledare.max_speed += 20
     else if (powerup.key == 'neddut') partiledare.max_speed -= 20
