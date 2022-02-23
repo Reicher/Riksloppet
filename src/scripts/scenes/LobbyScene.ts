@@ -1,13 +1,11 @@
 import { DataMessage, MESSAGE_TYPE } from '../../networking/dataTypes'
-import { HostClient } from '../../networking/HostClient'
-import { NetworkClient } from '../../networking/NetworkClient'
-import { NetworkPlayersHandler } from '../../networking/NetworkPlayersHandler'
-import { SlaveClient } from '../../networking/SlaveClient'
 import { IPlayerIdentity } from '../../networking/types'
 import { IMultiplayerContext } from '../objects/GameContext'
 import { Button } from '../UI/Button'
 import { COLOR } from '../UI/constants'
 import { Group } from '../UI/Group'
+import { Image } from '../UI/Image'
+import { getPortättImageSource } from '../UI/PortättImage'
 import { Text } from '../UI/Text'
 import { UIHandler } from '../UI/UIHandler'
 
@@ -92,6 +90,16 @@ export class LobbyScene extends Phaser.Scene {
   }
 
   private addPlayer(player: IPlayerIdentity) {
-    this.clientsGroup.addElement(new Text(player.clientName, 'normal'))
+    const playerGroup = new Group(true)
+    const portätt = new Image({
+      width: 150,
+      height: 150,
+      sizing: 'contain',
+      source: getPortättImageSource(player.parti!)
+    })
+    const playerName = new Text(player.clientName, 'normal')
+
+    playerGroup.addElement(portätt, playerName)
+    this.clientsGroup.addElement(playerGroup)
   }
 }

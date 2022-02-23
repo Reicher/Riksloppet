@@ -43,8 +43,8 @@ export class SlaveClient extends PeerClient {
       }
     }
 
-    this.connection.onconnectionstatechange = () => {
-      if (this.connection.connectionState === 'connected') {
+    this.connection.oniceconnectionstatechange = () => {
+      if (this.connection.iceConnectionState === 'connected') {
         console.log(`Client ${this.clientId} connected to host`)
         this.isConnected = true
 

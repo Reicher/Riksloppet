@@ -12,7 +12,7 @@ const imageHoverStyle: Styles = {
   filter: 'none'
 }
 
-const getPortättImageSource = (parti: Parti) => `assets/img/${getLedamotForParti(parti)}_porträtt.png`
+export const getPortättImageSource = (parti: Parti) => `assets/img/${getLedamotForParti(parti)}_porträtt.png`
 
 export class PortättImage extends Image {
   parti: Parti

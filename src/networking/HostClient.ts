@@ -28,8 +28,8 @@ class SubClient extends PeerClient {
       }
     }
 
-    this.connection.onconnectionstatechange = async () => {
-      if (this.connection.connectionState === 'connected') {
+    this.connection.oniceconnectionstatechange = async () => {
+      if (this.connection.iceConnectionState === 'connected') {
         const clientData = (await getDoc(this.clientDoc)).data()
         console.log(`Peer connection established, data:`, clientData)
         if (clientData?.clientName === undefined) return
