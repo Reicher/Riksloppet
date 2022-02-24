@@ -82,8 +82,8 @@ export class MainScene extends Phaser.Scene {
       this.input.keyboard.createCursorKeys()
     )
 
-    this.spelare.setCollideWorldBounds()
     this.riksdagen.add(this.spelare)
+    this.spelare.setCollideWorldBounds()
   }
 
   private initMultiplayerGame(context: IMultiplayerContext) {
@@ -101,8 +101,8 @@ export class MainScene extends Phaser.Scene {
       context.playersHandler
     )
 
-    this.spelare.setCollideWorldBounds()
     this.riksdagen.add(this.spelare)
+    this.spelare.setCollideWorldBounds()
 
     context.playersHandler.onRemovePlayer = player => {
       console.log(`[MainScene] replacing ${player.clientName} with ai`)

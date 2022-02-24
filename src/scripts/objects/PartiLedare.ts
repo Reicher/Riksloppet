@@ -37,11 +37,10 @@ export default class Partiledare extends Phaser.Physics.Arcade.Sprite {
     })
 
     scene.physics.add.existing(this)
+    scene.add.existing(this)
 
     this.setBodySize(30, 30)
     this.body.setOffset(10, 50)
-
-    scene.add.existing(this)
   }
 
   slå() {
