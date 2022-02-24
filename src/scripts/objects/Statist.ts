@@ -58,8 +58,10 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
   }
 
   kasta() {
-    this.play('kasta', true)
-    this.powerup_tween.play()
+    if (this.powerup) {
+      this.play('kasta', true)
+      this.powerup_tween.play()
+    }
   }
 
   collidedWith(ledare: Partiledare) {

@@ -11,16 +11,36 @@ export enum PARTI_LEDAMOT {
 
 export const LEDAMOT_START_POSITION = {
   [PARTI_LEDAMOT.KRISTDEMOKRAT]: {
-    x: 150
+    x: 150,
+    y: 50
   },
   [PARTI_LEDAMOT.VÄNSTERPARTIST]: {
-    x: 50
+    x: 50,
+    y: 50
   },
   [PARTI_LEDAMOT.CENTERPARTIST]: {
-    x: 100
+    x: 100,
+    y: 50
   },
   [PARTI_LEDAMOT.SVERIGEDEMOKRAT]: {
-    x: 200
+    x: 200,
+    y: 50
+  },
+  [PARTI_LEDAMOT.SOCIALDEMOKRAT]: {
+    x: 150,
+    y: 150
+  },
+  [PARTI_LEDAMOT.LIBERAL]: {
+    x: 50,
+    y: 150
+  },
+  [PARTI_LEDAMOT.MILJÖPARTIST]: {
+    x: 100,
+    y: 150
+  },
+  [PARTI_LEDAMOT.MODERAT]: {
+    x: 200,
+    y: 150
   }
 }
 

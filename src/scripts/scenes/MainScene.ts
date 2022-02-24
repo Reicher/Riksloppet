@@ -4,9 +4,17 @@ import { PlayerController } from '../objects/PlayerController'
 import { GameContext, IMultiplayerContext, ISinglePlayerContext } from '../objects/GameContext'
 import { RemotePlayer } from '../objects/RemotePlayer'
 import { UIHandler } from '../UI/UIHandler'
-import { getLedamotForParti, getXPostitionForLedamot } from './constants'
+import {
+  getLedamotForParti,
+  getPartiForLedamot,
+  getXPostitionForLedamot,
+  LEDAMOT_START_POSITION,
+  Parti,
+  PARTI_LEDAMOT
+} from './constants'
 import { NetworkedPlayerController } from '../objects/NetworkedPlayerController'
 import { AIPlayerController } from '../objects/AIPlayerController'
+import Partiledare from '../objects/PartiLedare'
 
 export const enum GAME_STATE {
   SETUP,
@@ -66,11 +74,29 @@ export class MainScene extends Phaser.Scene {
 
     this.vinnare = []
 
+    // Skapa bot ledamöten
+    for (let ledamot of Object.values(PARTI_LEDAMOT)) {
+      console.log(ledamot)
+
+      this.addOrReplaceLedamot(
+        new AIPlayerController(this, LEDAMOT_START_POSITION[ledamot].x, LEDAMOT_START_POSITION[ledamot].y, ledamot)
+      )
+    }
+
     if (context.type === 'Multiplayer') {
       this.initMultiplayerGame(context)
     } else {
       this.initSingleplayerGame(context)
     }
+  }
+
+  addOrReplaceLedamot(ledamot: Partiledare) {
+    // leta upp om ledamoten redan finns i riksdagen, ta då bort och byt ut.
+    let copy_cat = this.riksdagen.getMatching('key', ledamot.key)[0]
+    if (copy_cat) copy_cat.destroy()
+
+    this.riksdagen.add(ledamot)
+    ledamot.setCollideWorldBounds()
   }
 
   private initSingleplayerGame(context: ISinglePlayerContext) {
@@ -81,16 +107,13 @@ export class MainScene extends Phaser.Scene {
       getLedamotForParti(context.player.parti!),
       this.input.keyboard.createCursorKeys()
     )
-
-    this.riksdagen.add(this.spelare)
-    this.spelare.setCollideWorldBounds()
+    this.addOrReplaceLedamot(this.spelare)
   }
 
   private initMultiplayerGame(context: IMultiplayerContext) {
     for (const player of context.playersHandler.getConnectedPlayers()) {
       const remotePlayer = new RemotePlayer(this, player, context.playersHandler)
-      remotePlayer.setCollideWorldBounds(true)
-      this.riksdagen.add(remotePlayer)
+      this.addOrReplaceLedamot(remotePlayer)
     }
 
     this.spelare = new NetworkedPlayerController(
@@ -101,8 +124,7 @@ export class MainScene extends Phaser.Scene {
       context.playersHandler
     )
 
-    this.riksdagen.add(this.spelare)
-    this.spelare.setCollideWorldBounds()
+    this.addOrReplaceLedamot(this.spelare)
 
     context.playersHandler.onRemovePlayer = player => {
       console.log(`[MainScene] replacing ${player.clientName} with ai`)
