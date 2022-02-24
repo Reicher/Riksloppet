@@ -40,12 +40,10 @@ export class NetworkClient extends EventEmitter<ClientEvents> implements IClient
 
     channel.onclose = () => {
       console.log(`Channel ${id} closed!`)
-      this.removeChannel(id)
     }
 
     channel.onerror = event => {
       console.error(`Channel ${id} error!`, event)
-      this.removeChannel(id)
     }
 
     channel.onopen = () => {
@@ -70,9 +68,13 @@ export class NetworkClient extends EventEmitter<ClientEvents> implements IClient
 
   public sendData(message: Omit<DataMessage, 'senderId'>) {
     for (const channel of Object.values(this.channels)) {
-      channel.send(JSON.stringify({ ...message, senderId: this.clientId }))
+      if (channel.readyState === 'open') {
+        channel.send(JSON.stringify({ ...message, senderId: this.clientId }))
+      }
     }
   }
+
+  public lockRoom() {}
 
   protected addConnection(peerConnection: RTCPeerConnection, clientId: string) {
     if (this.isHost) {
@@ -82,8 +84,11 @@ export class NetworkClient extends EventEmitter<ClientEvents> implements IClient
     }
   }
 
-  getConnectedClients(): IClientIdentity[] {
-    throw new Error('Method not implemented.')
+  protected removeConnection(clientId: string) {
+    const channel = this.channels[clientId]
+    channel.close()
+
+    this.removeChannel(clientId)
   }
 
   connect(): Promise<void> {

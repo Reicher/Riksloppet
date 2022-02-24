@@ -35,4 +35,9 @@ export class PlayerActor extends Partiledare {
       this.y - this.getBounds().height / 2 - this.textLabel.height - 5
     )
   }
+
+  destroy(fromScene?: boolean): void {
+    this.textLabel.destroy()
+    super.destroy(fromScene)
+  }
 }

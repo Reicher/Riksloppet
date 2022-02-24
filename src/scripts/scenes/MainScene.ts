@@ -6,6 +6,7 @@ import { RemotePlayer } from '../objects/RemotePlayer'
 import { UIHandler } from '../UI/UIHandler'
 import { getLedamotForParti, getXPostitionForLedamot } from './constants'
 import { NetworkedPlayerController } from '../objects/NetworkedPlayerController'
+import { AIPlayerController } from '../objects/AIPlayerController'
 
 export const enum GAME_STATE {
   SETUP,
@@ -102,6 +103,20 @@ export class MainScene extends Phaser.Scene {
 
     this.spelare.setCollideWorldBounds()
     this.riksdagen.add(this.spelare)
+
+    context.playersHandler.onRemovePlayer = player => {
+      console.log(`[MainScene] replacing ${player.clientName} with ai`)
+      const remotePlayer = this.riksdagen
+        .getChildren()
+        .find(child => child instanceof RemotePlayer && child.clientId === player.clientId) as RemotePlayer
+      if (remotePlayer) {
+        const aiPlayer = new AIPlayerController(this, remotePlayer.x, remotePlayer.y, remotePlayer.key)
+        aiPlayer.setCollideWorldBounds(true)
+        remotePlayer.destroy()
+        this.riksdagen.remove(remotePlayer)
+        this.riksdagen.add(aiPlayer)
+      }
+    }
   }
 
   lineUpPlayers() {

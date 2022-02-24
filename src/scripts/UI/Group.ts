@@ -6,7 +6,9 @@ const groupDefaultStyle = (row: boolean): Styles => ({
   display: 'flex',
   flexDirection: row ? 'row' : 'column',
   rowGap: SPACING.LARGE,
-  columnGap: SPACING.LARGE
+  columnGap: SPACING.LARGE,
+  maxWidth: '600px',
+  width: '100%'
 })
 
 export class Group extends UIElement<HTMLDivElement> {

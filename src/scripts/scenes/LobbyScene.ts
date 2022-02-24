@@ -19,6 +19,7 @@ export class LobbyScene extends Phaser.Scene {
   clientName: string
   roomId: string
   context: IMultiplayerContext
+  players: Record<string, Group>
 
   clientsGroup: Group
 
@@ -30,10 +31,12 @@ export class LobbyScene extends Phaser.Scene {
 
   create(context: IMultiplayerContext) {
     this.context = context
+    this.players = {}
     this.clientsGroup = new Group()
 
     context.playersHandler.getConnectedPlayers(false).forEach(this.addPlayer.bind(this))
     context.playersHandler.onNewPlayer = this.addPlayer.bind(this)
+    context.playersHandler.onRemovePlayer = this.removePlayer.bind(this)
 
     if (this.context.networkClient.isHost) {
       this.createHostedLobby()
@@ -57,7 +60,8 @@ export class LobbyScene extends Phaser.Scene {
     const startGameButton = new Button('Starta spelet', COLOR.GREEN)
     startGameButton.onClick(() => {
       // Start the game
-      this.context.networkClient?.sendData({
+      this.context.networkClient.lockRoom()
+      this.context.networkClient.sendData({
         type: MESSAGE_TYPE.START_GAME,
         payload: []
       })
@@ -89,6 +93,11 @@ export class LobbyScene extends Phaser.Scene {
     this.context.networkClient.on('game-data', onGameData)
   }
 
+  private removePlayer(player: IPlayerIdentity) {
+    const playerGroup = this.players[player.clientId]
+    playerGroup.destroy()
+  }
+
   private addPlayer(player: IPlayerIdentity) {
     const playerGroup = new Group(true)
     const portätt = new Image({
@@ -100,6 +109,7 @@ export class LobbyScene extends Phaser.Scene {
     const playerName = new Text(player.clientName, 'normal')
 
     playerGroup.addElement(portätt, playerName)
+    this.players[player.clientId] = playerGroup
     this.clientsGroup.addElement(playerGroup)
   }
 }

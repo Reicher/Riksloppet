@@ -6,7 +6,8 @@ import {
   DocumentReference,
   getDoc,
   onSnapshot,
-  setDoc
+  setDoc,
+  Unsubscribe
 } from 'firebase/firestore'
 import { firebase } from './firebase'
 import { CLIENT_NAME_UNKNOWN } from './messageTypes'
@@ -37,6 +38,13 @@ class SubClient extends PeerClient {
         this.clientName = clientData.clientName
         this.emit('client-connected', {
           clientName: clientData.clientName,
+          clientId: this.clientId,
+          isHost: false
+        })
+      } else if (this.connection.iceConnectionState === 'disconnected') {
+        console.log(`Peer connection disconnected`, this)
+        this.emit('client-disconnected', {
+          clientName: this.clientName,
           clientId: this.clientId,
           isHost: false
         })
@@ -72,7 +80,8 @@ class SubClient extends PeerClient {
 }
 
 export class HostClient extends NetworkClient {
-  private subclients: SubClient[]
+  private openForConnections: boolean
+  private unsubscibeClients: Unsubscribe
 
   constructor(_clientName: string) {
     super()
@@ -80,7 +89,7 @@ export class HostClient extends NetworkClient {
     this.isHost = true
     this.isConnected = false
     this.clientName = _clientName
-    this.subclients = []
+    this.openForConnections = true
   }
 
   public async connect() {
@@ -97,9 +106,9 @@ export class HostClient extends NetworkClient {
     this.isConnected = true
     this.emit('room-created', this.roomId)
 
-    onSnapshot(roomClients, snapshot => {
+    this.unsubscibeClients = onSnapshot(roomClients, snapshot => {
       snapshot.docChanges().forEach(change => {
-        if (change.type === 'added') {
+        if (change.type === 'added' && this.openForConnections) {
           console.log('Client connected, setting up peer connection...')
           const clientDoc = change.doc.ref
           this.createSubClient(clientDoc)
@@ -108,8 +117,10 @@ export class HostClient extends NetworkClient {
     })
   }
 
-  getConnectedClients() {
-    return this.subclients
+  public lockRoom() {
+    console.log('[HostClient] locked new connections')
+    this.openForConnections = false
+    this.unsubscibeClients()
   }
 
   private createSubClient(clientDoc: DocumentReference<DocumentData>) {
@@ -117,9 +128,12 @@ export class HostClient extends NetworkClient {
     subClient.addListener('client-connected', identity => {
       this.emit('client-connected', identity)
     })
+    subClient.addListener('client-disconnected', identity => {
+      this.removeConnection(identity.clientId)
+      this.emit('client-disconnected', identity)
+    })
     this.addConnection(subClient.connection, subClient.clientId)
 
     subClient.connect()
-    this.subclients.push(subClient)
   }
 }

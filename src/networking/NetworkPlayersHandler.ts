@@ -10,6 +10,7 @@ export class NetworkPlayersHandler {
   private pingId: NodeJS.Timer
 
   public onNewPlayer: (player: IPlayerIdentity) => void = () => {}
+  public onRemovePlayer: (player: IPlayerIdentity) => void = () => {}
 
   constructor(networkClient: NetworkClient) {
     this.connectedPlayers = {}
@@ -32,6 +33,7 @@ export class NetworkPlayersHandler {
       ready: true
     }
     this.networkClient.addListener('client-connected', this.onClientConnected.bind(this))
+    this.networkClient.addListener('client-disconnected', this.onClientDisconnected.bind(this))
   }
 
   private setupAsClient() {
@@ -54,6 +56,15 @@ export class NetworkPlayersHandler {
     }
   }
 
+  private onClientDisconnected(player: IPlayerIdentity) {
+    console.log('[NetworkPlayersHandler] player disconnected')
+    this.removeConnectedPlayer(player)
+    this.networkClient.sendData({
+      type: MESSAGE_TYPE.PLAYER_DISCONNECT,
+      payload: player
+    })
+  }
+
   private onGameData(data: DataMessage) {
     switch (data.type) {
       case MESSAGE_TYPE.CHARACTER_SELECTED:
@@ -67,12 +78,14 @@ export class NetworkPlayersHandler {
       case MESSAGE_TYPE.GET_PLAYERS:
         this.networkClient.sendData({
           type: MESSAGE_TYPE.CONNECTED_PLAYERS,
-          payload: Object.values(this.connectedPlayers).map(({ clientId, clientName, isHost, parti }) => ({
-            clientId,
-            clientName,
-            isHost,
-            parti
-          }))
+          payload: Object.values(this.connectedPlayers)
+            .filter(({ parti }) => !!parti)
+            .map(({ clientId, clientName, isHost, parti }) => ({
+              clientId,
+              clientName,
+              isHost,
+              parti
+            }))
         })
         break
       case MESSAGE_TYPE.CONNECTED_PLAYERS:
@@ -83,9 +96,19 @@ export class NetworkPlayersHandler {
           clearInterval(this.pingId)
         }
         break
+      case MESSAGE_TYPE.PLAYER_DISCONNECT:
+        this.removeConnectedPlayer(data.payload)
+        break
       default:
         break
     }
+  }
+
+  private removeConnectedPlayer(player: IPlayerIdentity) {
+    console.log('[NetworkPlayersHandler] player disconnected', player)
+
+    delete this.connectedPlayers[player.clientId]
+    this.onRemovePlayer(player)
   }
 
   private addConnectedPlayers(players: IPlayerIdentity[]) {
@@ -128,7 +151,9 @@ export class NetworkPlayersHandler {
   }
 
   public selectParti(parti: Parti) {
-    this.connectedPlayers[this.networkClient.clientId].parti = parti
+    if (this.networkClient.isHost) {
+      this.connectedPlayers[this.networkClient.clientId].parti = parti
+    }
     this.networkClient.sendData({
       type: MESSAGE_TYPE.CHARACTER_SELECTED,
       payload: parti

@@ -12,14 +12,12 @@ import {
 import { firebase } from './firebase'
 import { v4 as uuid } from 'uuid'
 import { PeerClient } from './PeerClient'
-import { ClientData, IClientIdentity, RoomData } from './types'
+import { ClientData, RoomData } from './types'
 
 // Used by clients who joins an exisitng room.
 export class SlaveClient extends PeerClient {
   clientsDoc: CollectionReference<ClientData>
   roomDoc: DocumentReference<RoomData>
-
-  private connectedClients: IClientIdentity[]
 
   constructor(_roomId: string, _clientName: string) {
     const roomDoc = doc(collection(firebase.db, 'rooms'), _roomId) as DocumentReference<RoomData>
@@ -32,7 +30,6 @@ export class SlaveClient extends PeerClient {
     this.clientsDoc = clients
     this.roomDoc = roomDoc
     this.isHost = false
-    this.connectedClients = []
     this.setupListeners()
   }
 
@@ -47,16 +44,20 @@ export class SlaveClient extends PeerClient {
       if (this.connection.iceConnectionState === 'connected') {
         console.log(`Client ${this.clientId} connected to host`)
         this.isConnected = true
-
         this.emit('joined-room')
+      } else if (this.connection.iceConnectionState === 'disconnected') {
+        console.log(`Client ${this.clientId} disconnected`)
+        this.isConnected = false
+        this.removeConnection(this.clientId)
+        this.emit('client-disconnected', {
+          clientId: this.clientId,
+          clientName: this.clientName,
+          isHost: false
+        })
       }
       // ToDo: Implement client disconnect
     }
     this.addConnection(this.connection, this.clientId)
-  }
-
-  public getConnectedClients() {
-    return this.connectedClients
   }
 
   public async connect() {

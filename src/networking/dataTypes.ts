@@ -5,6 +5,7 @@ export const enum MESSAGE_TYPE {
   PLAYER_MOVE = 0,
   GET_PLAYERS,
   CONNECTED_PLAYERS,
+  PLAYER_DISCONNECT,
   START_GAME,
   CHARACTER_SELECTED
 }
@@ -18,6 +19,7 @@ export type StartGameMessage = BaseDataMessage<MESSAGE_TYPE.START_GAME>
 export type CharacterSelectedMessage = BaseDataMessage<MESSAGE_TYPE.CHARACTER_SELECTED, Parti>
 export type GetPlayersMessage = BaseDataMessage<MESSAGE_TYPE.GET_PLAYERS>
 export type ConnectedPlayersMessage = BaseDataMessage<MESSAGE_TYPE.CONNECTED_PLAYERS, IPlayerIdentity[]>
+export type PlayerDisconnectedMessage = BaseDataMessage<MESSAGE_TYPE.PLAYER_DISCONNECT, IPlayerIdentity>
 
 export type DataMessage =
   | PlayerMoveMessage
@@ -25,3 +27,4 @@ export type DataMessage =
   | CharacterSelectedMessage
   | GetPlayersMessage
   | ConnectedPlayersMessage
+  | PlayerDisconnectedMessage

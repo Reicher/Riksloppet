@@ -29,5 +29,4 @@ export interface IPlayerIdentity extends IClientIdentity {
 export interface IClient extends IClientIdentity {
   sendData(dataMessage: DataMessage): void
   connect(): Promise<void>
-  getConnectedClients(): IClientIdentity[]
 }

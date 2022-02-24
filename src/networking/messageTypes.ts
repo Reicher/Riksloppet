@@ -12,6 +12,7 @@ export const enum MESSAGE_TYPE {
 export type ClientEvents = {
   'game-data': [DataMessage]
   'client-connected': [IClientIdentity]
+  'client-disconnected': [IClientIdentity]
   'room-created': [string]
   'joined-room': []
 }
