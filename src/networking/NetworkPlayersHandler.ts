@@ -1,9 +1,9 @@
 import { Parti } from '../scripts/scenes/constants'
-import { CharacterSelectedMessage, DataMessage, MESSAGE_TYPE } from './dataTypes'
+import { CharacterSelectedMessage, DataMessage, MESSAGE_TYPE } from './messageTypes'
 import { NetworkClient } from './NetworkClient'
 import { IClientIdentity, IPlayerIdentity } from './types'
 
-type PlayerMoveCallback = (x: number, y: number) => void
+type PlayerMoveCallback = (dirX: number, dirY: number, posX: number, posY: number) => void
 export class NetworkPlayersHandler {
   private connectedPlayers: Record<string, IPlayerIdentity & { ready: boolean; onPlayerMove: PlayerMoveCallback }>
   private networkClient: NetworkClient
@@ -160,10 +160,10 @@ export class NetworkPlayersHandler {
     })
   }
 
-  public replicatePlayerMove(x: number, y: number) {
+  public replicatePlayerMove(dirX: number, dirY: number, posX: number, posY: number) {
     this.networkClient.sendData({
       type: MESSAGE_TYPE.PLAYER_MOVE,
-      payload: [x, y]
+      payload: [dirX, dirY, posX, posY]
     })
   }
 

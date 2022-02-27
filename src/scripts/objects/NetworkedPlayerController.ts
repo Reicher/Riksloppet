@@ -20,6 +20,8 @@ export class NetworkedPlayerController extends PlayerController {
   update(time: any, delta: any): void {
     super.update(time, delta)
 
-    this.networkPlayerHandler.replicatePlayerMove(...this.dir)
+    if (this.dir[0] !== 0 || this.dir[1] !== 0) {
+      this.networkPlayerHandler.replicatePlayerMove(...this.dir, this.x, this.y)
+    }
   }
 }

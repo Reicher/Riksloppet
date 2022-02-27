@@ -1,5 +1,5 @@
 import { Parti } from '../scripts/scenes/constants'
-import type { DataMessage } from './dataTypes'
+import type { DataMessage } from './messageTypes'
 
 type SessionDescription = {
   sdp?: string

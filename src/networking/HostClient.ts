@@ -10,7 +10,7 @@ import {
   Unsubscribe
 } from 'firebase/firestore'
 import { firebase } from './firebase'
-import { CLIENT_NAME_UNKNOWN } from './messageTypes'
+import { CLIENT_NAME_UNKNOWN } from './clientEvents'
 import { NetworkClient } from './NetworkClient'
 import { PeerClient } from './PeerClient'
 import { RoomData } from './types'

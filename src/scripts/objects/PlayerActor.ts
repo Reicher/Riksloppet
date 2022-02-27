@@ -1,5 +1,5 @@
 import { Dir } from '../../../typings/custom'
-import { getColorForParti, getLedamotForParti, getPartiForLedamot, PARTI_LEDAMOT } from '../scenes/constants'
+import { getColorForParti, getPartiForLedamot, PARTI_LEDAMOT } from '../scenes/constants'
 import Partiledare from './PartiLedare'
 
 export class PlayerActor extends Partiledare {
@@ -22,6 +22,13 @@ export class PlayerActor extends Partiledare {
     })
   }
 
+  protected updateTextLabelPosition() {
+    this.textLabel.setPosition(
+      this.x - this.textLabel.width / 2,
+      this.y - this.getBounds().height / 2 - this.textLabel.height - 5
+    )
+  }
+
   update(time: any, delta: any): void {
     if (this.knocked_out > 0) {
       this.knocked_out -= delta / 1000
@@ -30,10 +37,7 @@ export class PlayerActor extends Partiledare {
 
     super.update(time, delta, this.dir)
 
-    this.textLabel.setPosition(
-      this.x - this.textLabel.width / 2,
-      this.y - this.getBounds().height / 2 - this.textLabel.height - 5
-    )
+    this.updateTextLabelPosition()
   }
 
   destroy(fromScene?: boolean): void {

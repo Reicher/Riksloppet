@@ -1,4 +1,4 @@
-import Phaser, { Scene, Physics } from 'phaser'
+import Phaser, { GameObjects, Physics } from 'phaser'
 import { MainScene } from '../scenes/MainScene'
 import { Difficulty } from '../scenes/types'
 import Statist from './Statist'
@@ -51,49 +51,47 @@ export class Level {
     förgrund1.depth = scene.WIDTH + 11
   }
 
-  public createHinder(pos) {
-    let hinder = this.hinder.create(
-      pos,
-      Phaser.Math.Between(this.scene.STREET_MIN_Y, this.scene.STREET_MAX_Y),
-      'bil_röd'
-    )
+  protected createHinder(x: number, y: number) {
+    const hinder = this.hinder.create(x, y, 'bil_röd')
 
     hinder.setImmovable(true)
     hinder.setBodySize(170, 50)
     hinder.body.setOffset(0, 50)
     hinder.setOrigin(0, 0.5)
     hinder.depth = hinder.y
+
+    return hinder
   }
 
-  public createStatist(x, y, pwr) {
-    let frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille']) // fler senare
-
-    // Kanske meningen att skapa en Statist per powerup?
-    // Just nu skickar vi med hela gruppen
+  protected createStatist(
+    x: number,
+    y: number,
+    pwr: Physics.Arcade.Sprite,
+    frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille'])
+  ) {
     let statist = new Statist(this.scene, x, y, frame, pwr)
     this.statist.add(statist, true)
 
     statist.setOrigin(0, 0.5)
+
+    return statist
   }
 
-  update(time: any, delta: any, horizon: number): void {
-    // ToDo: Needs to changed to be determenistic in multiplayer.
-    // Look into seeding?
-    // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/random-data-generator/
-
+  update(_time: any, _delta: any, horizon: number): void {
     if (horizon > this.next_hinder) {
-      this.next_hinder = horizon + Phaser.Math.Between(200, 600)
-      this.createHinder(horizon)
+      this.next_hinder = horizon + Phaser.Math.RND.between(200, 600)
+      const hinderY = Phaser.Math.RND.between(this.scene.STREET_MIN_Y, this.scene.STREET_MAX_Y)
+      this.createHinder(horizon, hinderY)
     }
 
     if (horizon > this.next_statist_uppe) {
-      this.next_statist_uppe = horizon + Phaser.Math.Between(40, 100)
+      this.next_statist_uppe = horizon + Phaser.Math.RND.between(40, 100)
       let pwr = this.powerup.create(horizon + 20, 100, 'peng')
       this.createStatist(horizon, 130, pwr)
     }
 
     if (horizon > this.next_statist_nere) {
-      this.next_statist_nere = horizon + Phaser.Math.Between(40, 100)
+      this.next_statist_nere = horizon + Phaser.Math.RND.between(40, 100)
       let pwr = this.powerup.create(horizon + 20, this.scene.HEIGHT - 155, 'peng')
       this.createStatist(horizon, this.scene.HEIGHT - 90, pwr)
     }

@@ -1,4 +1,4 @@
-import { DataMessage, MESSAGE_TYPE } from '../../networking/dataTypes'
+import { DataMessage, MESSAGE_TYPE } from '../../networking/messageTypes'
 import { IPlayerIdentity } from '../../networking/types'
 import { IMultiplayerContext } from '../objects/GameContext'
 import { Button } from '../UI/Button'

@@ -1,4 +1,4 @@
-import { Level } from '../objects/level'
+import { Level } from '../objects/Level'
 import { PlayerActor } from '../objects/PlayerActor'
 import { PlayerController } from '../objects/PlayerController'
 import { GameContext, IMultiplayerContext, ISinglePlayerContext } from '../objects/GameContext'
@@ -7,6 +7,8 @@ import { UIHandler } from '../UI/UIHandler'
 import { getLedamotForParti, getXPostitionForLedamot } from './constants'
 import { NetworkedPlayerController } from '../objects/NetworkedPlayerController'
 import { AIPlayerController } from '../objects/AIPlayerController'
+import { HostLevel } from '../objects/HostLevel'
+import { ClientLevel } from '../objects/ClientLevel'
 
 export const enum GAME_STATE {
   SETUP,
@@ -62,8 +64,6 @@ export class MainScene extends Phaser.Scene {
     this.hinder = new Phaser.Physics.Arcade.Group(this.physics.world, this)
     this.statist = new Phaser.Physics.Arcade.Group(this.physics.world, this)
 
-    this.level = new Level(this, this.goal, 0, this.statist, this.hinder, this.powerups)
-
     this.vinnare = []
 
     if (context.type === 'Multiplayer') {
@@ -74,6 +74,8 @@ export class MainScene extends Phaser.Scene {
   }
 
   private initSingleplayerGame(context: ISinglePlayerContext) {
+    this.level = new Level(this, this.goal, 0, this.statist, this.hinder, this.powerups)
+
     this.spelare = new PlayerController(
       this,
       0,
@@ -87,6 +89,12 @@ export class MainScene extends Phaser.Scene {
   }
 
   private initMultiplayerGame(context: IMultiplayerContext) {
+    if (context.networkClient.isHost) {
+      this.level = new HostLevel(context.networkClient, this, this.goal, 0, this.statist, this.hinder, this.powerups)
+    } else {
+      this.level = new ClientLevel(context.networkClient, this, this.goal, 0, this.statist, this.hinder, this.powerups)
+    }
+
     for (const player of context.playersHandler.getConnectedPlayers()) {
       const remotePlayer = new RemotePlayer(this, player, context.playersHandler)
       remotePlayer.setCollideWorldBounds(true)

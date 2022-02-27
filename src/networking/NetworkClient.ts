@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3'
-import { DataMessage } from './dataTypes'
-import { ClientEvents } from './messageTypes'
+import { DataMessage } from './messageTypes'
+import { ClientEvents } from './clientEvents'
 import { IClient, IClientIdentity } from './types'
 import { v4 as uuid } from 'uuid'
 

@@ -3,6 +3,8 @@ import type { Dir } from '../../../typings/custom'
 import { PARTI_LEDAMOT } from '../scenes/constants'
 import { PlayerActor } from './PlayerActor'
 
+const MOUSE_THRESHOLD = 0.5
+
 export class PlayerController extends PlayerActor {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
 
@@ -29,9 +31,9 @@ export class PlayerController extends PlayerActor {
 
     let mus_finger = this.scene.input.activePointer
 
-    if (mus_finger.isDown) {
-      dir[0] = mus_finger.x - this.x + this.scene.cameras.main.scrollX
-      dir[1] = mus_finger.y - this.y
+    if (mus_finger.primaryDown) {
+      dir[0] = mus_finger.worldX < this.x - MOUSE_THRESHOLD ? -1 : mus_finger.worldX > this.x + MOUSE_THRESHOLD ? 1 : 0
+      dir[1] = mus_finger.worldY < this.y - MOUSE_THRESHOLD ? -1 : mus_finger.worldY > this.y + MOUSE_THRESHOLD ? 1 : 0
     }
     return dir
   }
