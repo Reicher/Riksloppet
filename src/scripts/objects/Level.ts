@@ -1,4 +1,4 @@
-import Phaser, { GameObjects, Physics } from 'phaser'
+import Phaser, { Physics } from 'phaser'
 import { MainScene } from '../scenes/MainScene'
 import { Difficulty } from '../scenes/types'
 import Statist from './Statist'
@@ -49,6 +49,16 @@ export class Level {
     let förgrund1 = scene.add.tileSprite(0, scene.HEIGHT - 100, length, scene.HEIGHT, 'förgrund1')
     förgrund1.setOrigin(0).setScrollFactor(2)
     förgrund1.depth = scene.WIDTH + 11
+
+    // Skapa några start-statister (uppe och nere separat)
+    let nästa_min = 60 // enhet oklar
+    let nästa_max = 130
+    for (let x = scene.WIDTH; x > 400; x -= Phaser.Math.Between(nästa_min, nästa_max)) {
+      this.createStatist(x, 170)
+    }
+    for (let x = scene.WIDTH; x > 400; x -= Phaser.Math.Between(nästa_min, nästa_max)) {
+      this.createStatist(x, this.scene.HEIGHT - 30)
+    }
   }
 
   protected createHinder(x: number, y: number) {
@@ -63,17 +73,23 @@ export class Level {
     return hinder
   }
 
+  protected createPowerup(x: number, y: number): Physics.Arcade.Sprite | undefined {
+    if (Phaser.Math.RND.frac() < 0.8) return undefined
+
+    if (Phaser.Math.RND.frac() > 0.5) return this.powerup.create(x, y - 75, 'peng').setOrigin(0.5, 1)
+    return this.powerup.create(x, y - 75, 'neddut').setOrigin(0.5, 1)
+  }
+
   protected createStatist(
     x: number,
     y: number,
-    pwr: Physics.Arcade.Sprite,
+    pwr = this.createPowerup(x, y),
     frame = Phaser.Math.RND.pick(['åskådare_kille', 'åskådare_kille'])
   ) {
     let statist = new Statist(this.scene, x, y, frame, pwr)
-    this.statist.add(statist, true)
 
-    statist.setOrigin(0, 0.5)
-
+    this.statist.add(statist, true) // Lägg till till scenens statistgrupp
+    statist.setOrigin(0.5, 1)
     return statist
   }
 
@@ -84,16 +100,16 @@ export class Level {
       this.createHinder(horizon, hinderY)
     }
 
+    let nästa_min = 60 // enhet oklar
+    let nästa_max = 130
     if (horizon > this.next_statist_uppe) {
-      this.next_statist_uppe = horizon + Phaser.Math.RND.between(40, 100)
-      let pwr = this.powerup.create(horizon + 20, 100, 'peng')
-      this.createStatist(horizon, 130, pwr)
+      this.next_statist_uppe = horizon + Phaser.Math.Between(nästa_min, nästa_max)
+      this.createStatist(horizon, 170)
     }
 
     if (horizon > this.next_statist_nere) {
-      this.next_statist_nere = horizon + Phaser.Math.RND.between(40, 100)
-      let pwr = this.powerup.create(horizon + 20, this.scene.HEIGHT - 155, 'peng')
-      this.createStatist(horizon, this.scene.HEIGHT - 90, pwr)
+      this.next_statist_nere = horizon + Phaser.Math.Between(nästa_min, nästa_max)
+      this.createStatist(horizon, this.scene.HEIGHT - 30)
     }
   }
 }

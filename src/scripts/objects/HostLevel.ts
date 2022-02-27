@@ -39,14 +39,14 @@ export class HostLevel extends Level {
     })
   }
 
-  protected createStatist(x: number, y: number, pwr: Physics.Arcade.Sprite, frame?: string): Statist {
+  protected createStatist(x: number, y: number, pwr?: Physics.Arcade.Sprite, frame?: string): Statist {
     const statist = super.createStatist(x, y, pwr, frame)
 
     this.replicateGameObject({
       type: GAME_OBJECT_TYPE.STATIST,
       data: {
-        pX: pwr.x,
-        pY: pwr.y,
+        pX: pwr?.x,
+        pY: pwr?.y,
         sX: x,
         sY: y,
         frame: statist.frame.name

@@ -2,11 +2,10 @@ import { Physics, Scene } from 'phaser'
 import Partiledare from './PartiLedare'
 
 export default class Statist extends Phaser.Physics.Arcade.Sprite {
-  powerup: Physics.Arcade.Sprite // Kan va null
+  powerup?: Physics.Arcade.Sprite // Kan va null
   powerup_tween
-  constructor(scene: Scene, x: number, y: number, key: string, powerup: Physics.Arcade.Sprite) {
+  constructor(scene: Scene, x: number, y: number, key: string, powerup?: Physics.Arcade.Sprite) {
     super(scene, x, y, key)
-
     scene.anims.create({
       key: 'smält',
       frameRate: 20,
@@ -33,25 +32,24 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
 
       let goal = 0
       if (y < 400) {
-        this.powerup.setOrigin(0.5, 1)
         goal = Phaser.Math.Between(this.y + 50, 500) // kanske måste finetuna
       } else {
-        this.powerup.setOrigin(0.5, 0)
         goal = Phaser.Math.Between(200, this.y - 50) // kanske måste finetuna
       }
 
       this.powerup.depth = this.y
       scene.physics.add.existing(this)
+      this.setFrame(4)
 
       this.powerup_tween = this.scene.tweens.add({
         targets: this.powerup,
-        y: { from: this.y, to: goal },
+        y: { from: this.powerup.y, to: goal },
         ease: 'Linear', // 'Cubic', 'Elastic', 'Bounce', 'Back'
         duration: 1000,
         paused: true
       })
 
-      var timer = scene.time.addEvent({
+      scene.time.addEvent({
         delay: Phaser.Math.Between(500, 5600), // ms
         callback: this.kasta,
         callbackScope: this
@@ -60,8 +58,10 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
   }
 
   kasta() {
-    this.play('kasta', true)
-    this.powerup_tween.play()
+    if (this.powerup) {
+      this.play('kasta', true)
+      this.powerup_tween.play()
+    }
   }
 
   collidedWith(ledare: Partiledare) {
@@ -79,6 +79,8 @@ export default class Statist extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(...args: any[]): void {
-    this.powerup.depth = this.powerup.y
+    if (this.powerup) {
+      this.powerup.depth = this.powerup.y
+    }
   }
 }

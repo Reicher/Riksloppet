@@ -43,8 +43,8 @@ export type CreateStatistPayload = {
   data: {
     sX: number
     sY: number
-    pX: number
-    pY: number
+    pX?: number
+    pY?: number
     frame: string
   }
 }

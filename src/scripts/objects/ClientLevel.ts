@@ -48,7 +48,8 @@ export class ClientLevel extends Level {
   }
 
   private spawnStatist({ pX, pY, sX, sY, frame }: CreateStatistPayload['data']) {
-    const power = this.powerup.create(pX, pY, 'peng')
+    const power = pX && pY ? this.powerup.create(pX, pY, 'peng') : undefined
+
     this.createStatist(sX, sY, power, frame)
   }
 
